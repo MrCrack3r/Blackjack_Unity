@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: df2d5c47c172fbc44ae68a1822d82d68
+guid: 7a9d755806a49cf4691a21fffba58cf8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4959607381974943688
-    second: START-Photoroom_0
+      213: 4651683372826080236
+    second: blackjack_background_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: START-Photoroom_0
+      name: blackjack_background_0
       rect:
         serializedVersion: 2
-        x: 265
-        y: 271
-        width: 374
-        height: 160
+        x: 0
+        y: 0
+        width: 1920
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8c7850403a014d440800000000000000
-      internalID: 4959607381974943688
+      spriteID: ce3b3e4c1691e8040800000000000000
+      internalID: 4651683372826080236
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      START-Photoroom_0: 4959607381974943688
+      blackjack_background_0: 4651683372826080236
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
