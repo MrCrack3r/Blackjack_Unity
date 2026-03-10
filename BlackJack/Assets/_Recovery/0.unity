@@ -155,8 +155,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -420, y: 20}
-  m_SizeDelta: {x: 250, y: 100}
+  m_AnchoredPosition: {x: -420, y: 0}
+  m_SizeDelta: {x: 120, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &212774354
 MonoBehaviour:
@@ -425,8 +425,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -420.00003, y: 140}
-  m_SizeDelta: {x: 250, y: 100}
+  m_AnchoredPosition: {x: -420.00003, y: 72.5}
+  m_SizeDelta: {x: 120, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &262094321
 MonoBehaviour:
@@ -606,10 +606,20 @@ MonoBehaviour:
   playerHandArea: {fileID: 379550684}
   dealerHandArea: {fileID: 1490195871}
   testCardSprites:
+  - {fileID: -4298345892085953899, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
   - {fileID: -1528235331, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
   - {fileID: -2095554925, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
   - {fileID: -709858588, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
-  testCardValues: 020000000300000004000000
+  - {fileID: 1835816748, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -1409477389, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 2044802855, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -2134593498, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -3117480, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -2061435494, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 1036326427, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 12006571, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 392966840, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  testCardValues: 0b00000002000000030000000400000005000000060000000700000008000000090000000a0000000a0000000a0000000a000000
   hitButton: {fileID: 0}
   standButton: {fileID: 0}
   doubleButton: {fileID: 0}
@@ -773,8 +783,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -420, y: -224}
-  m_SizeDelta: {x: 250, y: 100}
+  m_AnchoredPosition: {x: -420, y: -143}
+  m_SizeDelta: {x: 120, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &776504183
 MonoBehaviour:
@@ -906,8 +916,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -420, y: -100}
-  m_SizeDelta: {x: 250, y: 100}
+  m_AnchoredPosition: {x: -420, y: -72.5}
+  m_SizeDelta: {x: 120, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &832944988
 MonoBehaviour:

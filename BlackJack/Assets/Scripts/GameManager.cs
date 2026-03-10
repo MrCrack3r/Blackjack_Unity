@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections; // Reikalinga Coroutine (laikmačiams) naudoti
+using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public enum GameState
 {
@@ -21,9 +22,26 @@ public class GameManager : MonoBehaviour
     public Transform playerHandArea;
     public Transform dealerHandArea;
     public Sprite[] testCardSprites;
+    public int[] testCardValues; // Turi sutapti su sprite masyvu pagal indeksą
 
-    // Išsaugome nuorodą į užverstą dalintojo kortą, kad vėliau galėtume ją atversti
+    [Header("UI mygtukai")]
+    public Button hitButton;
+    public Button standButton;
+    public Button doubleButton;
+
+    [Header("Testinis statymas")]
+    public int currentBet = 10;
+
     private CardDisplay dealerHiddenCard;
+
+    private int playerScore;
+    private int dealerScore;
+
+    private int playerAcesAsEleven;
+    private int dealerAcesAsEleven;
+
+    private int playerCardCount;
+    private bool doubleUsed;
 
     private void Awake()
     {
@@ -36,105 +54,287 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.Betting);
     }
 
-    // LAIKINAS TESTAVIMAS: Paspaudus SPACE klavišą, imituojame "Stand" mygtuko paspaudimą
     private void Update()
     {
-        if (currentState == GameState.PlayerTurn && Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            Debug.Log("Žaidėjas paspaudė Space (Stand). Eilė pereina dalintojui.");
-            ChangeState(GameState.DealerTurn);
-        }
+        // Testavimui:
+        if (currentState == GameState.PlayerTurn && Keyboard.current.hKey.wasPressedThisFrame)
+            Hit();
+
+        if (currentState == GameState.PlayerTurn && Keyboard.current.sKey.wasPressedThisFrame)
+            Stand();
+
+        if (currentState == GameState.PlayerTurn && Keyboard.current.dKey.wasPressedThisFrame)
+            Double();
     }
-
-
 
     public void ChangeState(GameState newState)
     {
         currentState = newState;
         Debug.Log("Žaidimo būsena pasikeitė į: " + newState);
 
+        UpdateButtons();
+
         switch (currentState)
         {
             case GameState.Betting:
-                ChangeState(GameState.Dealing); // Laikinai iškart praleidžiame statymus
+                ChangeState(GameState.Dealing); // kol kas praleidžiam statymus
                 break;
+
             case GameState.Dealing:
                 HandleDealing();
                 break;
+
             case GameState.PlayerTurn:
-                Debug.Log("Laukiame žaidėjo... (PASPAUSKITE 'SPACE' KAD BAIGTI ĖJIMĄ)");
+                Debug.Log($"Žaidėjo ėjimas. Taškai: {playerScore}");
                 break;
+
             case GameState.DealerTurn:
-                StartCoroutine(DealerPlayRoutine()); // Naudojame Coroutine dėl pauzių
+                StartCoroutine(DealerPlayRoutine());
                 break;
+
             case GameState.RoundOver:
-                Debug.Log("Raundas baigėsi! Skaičiuojami rezultatai.");
+                HandleRoundOver();
                 break;
         }
     }
 
     private void HandleDealing()
     {
-        Debug.Log("Dalinamos kortos...");
-        SpawnCard(playerHandArea, true);
-        SpawnCard(playerHandArea, true);
+        ClearHand(playerHandArea);
+        ClearHand(dealerHandArea);
 
-        SpawnCard(dealerHandArea, true);
-        // Išsaugome antrąją dalintojo kortą į kintamąjį
-        dealerHiddenCard = SpawnCard(dealerHandArea, false);
+        playerScore = 0;
+        dealerScore = 0;
+        playerAcesAsEleven = 0;
+        dealerAcesAsEleven = 0;
+        playerCardCount = 0;
+        doubleUsed = false;
+        dealerHiddenCard = null;
+
+        Debug.Log("Dalinamos kortos...");
+
+        // Žaidėjui 2 kortos
+        int value;
+        CardDisplay player1 = SpawnCard(playerHandArea, true, out value);
+        if (player1 != null)
+        {
+            AddCardToPlayer(value);
+        }
+
+        CardDisplay player2 = SpawnCard(playerHandArea, true, out value);
+        if (player2 != null)
+        {
+            AddCardToPlayer(value);
+        }
+
+        // Dalintojui 2 kortos
+        CardDisplay dealer1 = SpawnCard(dealerHandArea, true, out value);
+        if (dealer1 != null)
+        {
+            AddCardToDealer(value);
+        }
+
+        dealerHiddenCard = SpawnCard(dealerHandArea, false, out value);
+        AddHiddenCardToDealer(value);
+
+        Debug.Log($"Žaidėjo taškai po dalinimo: {playerScore}");
 
         ChangeState(GameState.PlayerTurn);
     }
 
-    // Pakeitėme funkciją, kad ji grąžintų sukurtą CardDisplay skriptą
-    private CardDisplay SpawnCard(Transform area, bool faceUp)
+    private CardDisplay SpawnCard(Transform area, bool faceUp, out int cardValue)
     {
+        cardValue = 0;
+
+        if (testCardSprites == null || testCardSprites.Length == 0)
+        {
+            Debug.LogError("testCardSprites masyvas tuščias arba nepriskirtas!");
+            return null;
+        }
+
+        if (testCardValues == null || testCardValues.Length != testCardSprites.Length)
+        {
+            Debug.LogError("testCardValues masyvas nepriskirtas arba jo ilgis nesutampa su testCardSprites!");
+            return null;
+        }
+
         GameObject newCard = Instantiate(cardPrefab, area);
         CardDisplay display = newCard.GetComponent<CardDisplay>();
 
-        Sprite randomSprite = null;
-        if (testCardSprites != null && testCardSprites.Length > 0)
-        {
-            randomSprite = testCardSprites[Random.Range(0, testCardSprites.Length)];
-        }
+        int randomIndex = Random.Range(0, testCardSprites.Length);
+        Sprite randomSprite = testCardSprites[randomIndex];
+        cardValue = testCardValues[randomIndex];
 
         display.SetupCard(randomSprite, faceUp);
-        return display; // Grąžiname kortos komponentą
+        return display;
     }
 
-    // --- NAUJA SCRUM-109 LOGIKA ---
+    private void AddCardToPlayer(int value)
+    {
+        playerScore += value;
+        if (value == 11) playerAcesAsEleven++;
+
+        AdjustForAces(ref playerScore, ref playerAcesAsEleven);
+        playerCardCount++;
+
+        Debug.Log($"Žaidėjas gavo kortą už {value}. Iš viso: {playerScore}");
+    }
+
+    private void AddCardToDealer(int value)
+    {
+        dealerScore += value;
+        if (value == 11) dealerAcesAsEleven++;
+
+        AdjustForAces(ref dealerScore, ref dealerAcesAsEleven);
+
+        Debug.Log($"Dalintojo vidiniai taškai dabar: {dealerScore}");
+    }
+    private void AddHiddenCardToDealer(int value)
+    {
+        dealerScore += value;
+        if (value == 11) dealerAcesAsEleven++;
+
+        AdjustForAces(ref dealerScore, ref dealerAcesAsEleven);
+
+        Debug.Log($"Dalintojo antroji korta yra paslėpta");
+    }
+
+
+    private void AdjustForAces(ref int score, ref int acesAsEleven)
+    {
+        while (score > 21 && acesAsEleven > 0)
+        {
+            score -= 10; // tūzas iš 11 tampa 1
+            acesAsEleven--;
+        }
+    }
+
+    public void Hit()
+    {
+        if (currentState != GameState.PlayerTurn)
+            return;
+
+        int value;
+        CardDisplay playerhit = SpawnCard(playerHandArea, true, out value);
+        if (playerhit != null)
+        {
+            AddCardToPlayer(value);
+        }
+
+        if (playerScore > 21)
+        {
+            Debug.Log("Žaidėjas bust!");
+            ChangeState(GameState.RoundOver);
+        }
+    }
+
+    public void Stand()
+    {
+        if (currentState != GameState.PlayerTurn)
+            return;
+
+        Debug.Log("Žaidėjas pasirinko Stand.");
+        ChangeState(GameState.DealerTurn);
+    }
+
+    public void Double()
+    {
+        if (currentState != GameState.PlayerTurn)
+            return;
+
+        if (playerCardCount != 2)
+        {
+            Debug.Log("Double galima tik su pirmomis 2 kortomis.");
+            return;
+        }
+
+        currentBet *= 2;
+
+        int value;
+        CardDisplay playerdouble = SpawnCard(playerHandArea, true, out value);
+        if (playerdouble != null)
+        {
+            AddCardToPlayer(value);
+        }
+
+        ChangeState(GameState.DealerTurn);
+    }
+
     private IEnumerator DealerPlayRoutine()
     {
-        yield return new WaitForSeconds(1f); // Palaukiame 1 sekundę dėl natūralumo
+        yield return new WaitForSeconds(1f);
 
-        // 1. Dalintojas atverčia savo paslėptą kortą
         if (dealerHiddenCard != null)
         {
             dealerHiddenCard.FlipCard(true);
-            Debug.Log("Dalintojas atverčia savo kortą.");
+            Debug.Log($"Dalintojas atverčia kortą. Jo taškai: {dealerScore}");
         }
 
         yield return new WaitForSeconds(1f);
 
-        // Laikinas taškų kintamasis (Mocking), kol kiti padarys SCRUM-10
-        // Pradedame pvz. nuo 14 taškų, kad pamatytume, kaip jis traukia kortą
-        int dummyDealerScore = 14;
-
-        // 2. Traukimo ciklas: kol taškai mažiau nei 17
-        while (dummyDealerScore < 17)
+        while (dealerScore < 17)
         {
-            Debug.Log($"Dalintojas turi {dummyDealerScore} taškų. Traukia dar vieną kortą...");
-            SpawnCard(dealerHandArea, true);
+            Debug.Log($"Dalintojas turi {dealerScore} taškų. Traukia dar vieną kortą...");
 
-            // Pridedame atsitiktinį taškų kiekį (nuo 2 iki 10)
-            dummyDealerScore += Random.Range(2, 11);
+            int value;
+            SpawnCard(dealerHandArea, true, out value);
+            AddCardToDealer(value);
 
-            yield return new WaitForSeconds(1.5f); // Palaukiame prieš traukiant kitą
+            yield return new WaitForSeconds(1.2f);
         }
 
-        Debug.Log($"Dalintojas baigia ėjimą turėdamas {dummyDealerScore} taškų.");
-
-        // 3. Raundo pabaiga
+        Debug.Log($"Dalintojas baigia ėjimą su {dealerScore} taškais.");
         ChangeState(GameState.RoundOver);
+    }
+
+    private void HandleRoundOver()
+    {
+        string result;
+
+        if (playerScore > 21)
+        {
+            result = "Žaidėjas pralaimėjo (bust).";
+        }
+        else if (dealerScore > 21)
+        {
+            result = "Žaidėjas laimėjo (dealer bust).";
+        }
+        else if (playerScore > dealerScore)
+        {
+            result = "Žaidėjas laimėjo.";
+        }
+        else if (playerScore < dealerScore)
+        {
+            result = "Dalintojas laimėjo.";
+        }
+        else
+        {
+            result = "Lygiosios (Push).";
+        }
+
+        Debug.Log($"Raundas baigėsi. Žaidėjas: {playerScore}, Dalintojas: {dealerScore}. {result}");
+        UpdateButtons();
+    }
+
+    private void UpdateButtons()
+    {
+        bool playerTurn = currentState == GameState.PlayerTurn;
+
+        if (hitButton != null)
+            hitButton.interactable = playerTurn;
+
+        if (standButton != null)
+            standButton.interactable = playerTurn;
+
+        if (doubleButton != null)
+            doubleButton.interactable = playerTurn && playerCardCount == 2 && !doubleUsed;
+    }
+
+    private void ClearHand(Transform area)
+    {
+        for (int i = area.childCount - 1; i >= 0; i--)
+        {
+            Destroy(area.GetChild(i).gameObject);
+        }
     }
 }
