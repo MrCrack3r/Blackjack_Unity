@@ -606,10 +606,20 @@ MonoBehaviour:
   playerHandArea: {fileID: 379550684}
   dealerHandArea: {fileID: 1490195871}
   testCardSprites:
+  - {fileID: -4298345892085953899, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
   - {fileID: -1528235331, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
   - {fileID: -2095554925, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
   - {fileID: -709858588, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
-  testCardValues: 020000000300000004000000
+  - {fileID: 1835816748, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -1409477389, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 2044802855, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -2134593498, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -3117480, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: -2061435494, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 1036326427, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 12006571, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  - {fileID: 392966840, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  testCardValues: 0b00000002000000030000000400000005000000060000000700000008000000090000000a0000000a0000000a0000000a000000
   hitButton: {fileID: 0}
   standButton: {fileID: 0}
   doubleButton: {fileID: 0}
