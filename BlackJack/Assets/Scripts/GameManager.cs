@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 
 public enum GameState
 {
@@ -29,8 +30,13 @@ public class GameManager : MonoBehaviour
     public Button standButton;
     public Button doubleButton;
 
-    [Header("Testinis statymas")]
-    public int currentBet = 10;
+    [Header("Money UI")]
+    public TextMeshProUGUI budgetText;
+    public TextMeshProUGUI currentBetText;
+
+    [Header("Money Settings")]
+    public int playerBudget = 200;
+    public int currentBet = 20;
 
     private CardDisplay dealerHiddenCard;
 
@@ -51,6 +57,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        UpdateMoneyUI();
         ChangeState(GameState.Betting);
     }
 
@@ -77,7 +84,17 @@ public class GameManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Betting:
-                ChangeState(GameState.Dealing); // kol kas praleidžiam statymus
+
+                if (playerBudget < currentBet)
+                {
+                    Debug.Log("Nebėra pinigų statymui!");
+                    return;
+                }
+
+                playerBudget -= currentBet;
+                UpdateMoneyUI();
+
+                ChangeState(GameState.Dealing);
                 break;
 
             case GameState.Dealing:
@@ -293,15 +310,17 @@ public class GameManager : MonoBehaviour
 
         if (playerScore > 21)
         {
-            result = "Žaidėjas pralaimėjo (bust).";
+            result = "Žaidėjas pralaimėjo (Bust)";
         }
         else if (dealerScore > 21)
         {
-            result = "Žaidėjas laimėjo (dealer bust).";
+            result = "Žaidėjas laimėjo!";
+            playerBudget += currentBet * 2;
         }
         else if (playerScore > dealerScore)
         {
-            result = "Žaidėjas laimėjo.";
+            result = "Žaidėjas laimėjo!";
+            playerBudget += currentBet * 2;
         }
         else if (playerScore < dealerScore)
         {
@@ -309,11 +328,13 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            result = "Lygiosios (Push).";
+            result = "Push (lygiosios)";
+            playerBudget += currentBet;
         }
 
-        Debug.Log($"Raundas baigėsi. Žaidėjas: {playerScore}, Dalintojas: {dealerScore}. {result}");
-        UpdateButtons();
+        Debug.Log(result);
+
+        UpdateMoneyUI();
     }
 
     private void UpdateButtons()
@@ -336,5 +357,14 @@ public class GameManager : MonoBehaviour
         {
             Destroy(area.GetChild(i).gameObject);
         }
+    }
+
+    private void UpdateMoneyUI()
+    {
+        if (budgetText != null)
+            budgetText.text = "$" + playerBudget;
+
+        if (currentBetText != null)
+            currentBetText.text = "$" + currentBet;
     }
 }
