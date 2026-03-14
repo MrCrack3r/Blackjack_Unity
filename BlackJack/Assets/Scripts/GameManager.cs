@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -335,6 +336,24 @@ public class GameManager : MonoBehaviour
         Debug.Log(result);
 
         UpdateMoneyUI();
+
+        // --- PRIDĖTAS KODAS GAME OVER PATIKRINIMUI ---
+
+        // Patikriname, ar žaidėjui užtenka pinigų kitam statymui
+        if (playerBudget < currentBet)
+        {
+            Debug.Log("Pinigai baigėsi! Žaidimas baigtas.");
+
+            // Iškviečiame Coroutine, kad scena pasikeistų ne iškart, 
+            // o po trumpos pauzės (kad žaidėjas pamatytų paskutinę kortą/rezultatą)
+            StartCoroutine(GameOverSequence());
+        }
+        else
+        {
+            // Jei pinigų dar yra, čia galite įdėti logiką kitam raundui pradėti.
+            // Kol kas galime tiesiog palikti tuščią arba atspausdinti žinutę.
+            Debug.Log("Pinigų dar yra. Laukiamas naujas raundas...");
+        }
     }
 
     private void UpdateButtons()
@@ -366,5 +385,16 @@ public class GameManager : MonoBehaviour
 
         if (currentBetText != null)
             currentBetText.text = "$" + currentBet;
+    }
+
+    // Ši funkcija palaukia 2 sekundes ir tada įkelia End_screen sceną
+    private IEnumerator GameOverSequence()
+    {
+        // Palaukia 2 sekundes
+        yield return new WaitForSeconds(2f);
+
+        // Įkelia jūsų Game Over sceną. 
+        // SVARBU: Pavadinimas turi tiksliai atitikti jūsų scenos failo pavadinimą!
+        SceneManager.LoadScene("End_screen");
     }
 }
