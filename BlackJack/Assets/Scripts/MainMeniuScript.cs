@@ -8,7 +8,7 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         // Naudojame scenos pavadinimą iš jūsų projekto struktūros
-        SceneManager.LoadScene("Blackjack_table_scene");
+        SceneManager.LoadScene("Backjack_table_scene");
     }
 
     // Funkcija išėjimui iš žaidimo
