@@ -16,6 +16,8 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    private int dealerFirstCardValue;
+
     public static GameManager Instance;
     public GameState currentState;
 
@@ -58,6 +60,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (resultText != null) resultText.gameObject.SetActive(false);
         UpdateMoneyUI();
         ChangeState(GameState.Betting);
     }
@@ -128,6 +131,7 @@ public class GameManager : MonoBehaviour
         playerCardCount = 0;
         doubleUsed = false;
         dealerHiddenCard = null;
+        dealerFirstCardValue = 0; // Pridėkite 
 
         Debug.Log("Dalinamos kortos...");
 
@@ -149,6 +153,7 @@ public class GameManager : MonoBehaviour
         CardDisplay dealer1 = SpawnCard(dealerHandArea, true, out value);
         if (dealer1 != null)
         {
+            dealerFirstCardValue = value;
             AddCardToDealer(value);
         }
 
@@ -157,7 +162,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Žaidėjo taškai po dalinimo: {playerScore}");
 
+        UpdateScoreUI();
         ChangeState(GameState.PlayerTurn);
+
+
     }
 
     private CardDisplay SpawnCard(Transform area, bool faceUp, out int cardValue)
@@ -195,6 +203,7 @@ public class GameManager : MonoBehaviour
         AdjustForAces(ref playerScore, ref playerAcesAsEleven);
         playerCardCount++;
 
+        UpdateScoreUI();
         Debug.Log($"Žaidėjas gavo kortą už {value}. Iš viso: {playerScore}");
     }
 
@@ -206,6 +215,7 @@ public class GameManager : MonoBehaviour
         AdjustForAces(ref dealerScore, ref dealerAcesAsEleven);
 
         Debug.Log($"Dalintojo vidiniai taškai dabar: {dealerScore}");
+        UpdateScoreUI();
     }
     private void AddHiddenCardToDealer(int value)
     {
@@ -285,6 +295,7 @@ public class GameManager : MonoBehaviour
         if (dealerHiddenCard != null)
         {
             dealerHiddenCard.FlipCard(true);
+            UpdateScoreUI();
             Debug.Log($"Dalintojas atverčia kortą. Jo taškai: {dealerScore}");
         }
 
@@ -311,25 +322,25 @@ public class GameManager : MonoBehaviour
 
         if (playerScore > 21)
         {
-            result = "Žaidėjas pralaimėjo (Bust)";
+            result = "Player lost (Bust)";
         }
         else if (dealerScore > 21)
         {
-            result = "Žaidėjas laimėjo!";
+            result = "Player won!";
             playerBudget += currentBet * 2;
         }
         else if (playerScore > dealerScore)
         {
-            result = "Žaidėjas laimėjo!";
+            result = "Player won!";
             playerBudget += currentBet * 2;
         }
         else if (playerScore < dealerScore)
         {
-            result = "Dalintojas laimėjo.";
+            result = "Dealer won.";
         }
         else
         {
-            result = "Push (lygiosios)";
+            result = "Push";
             playerBudget += currentBet;
         }
 
@@ -353,6 +364,20 @@ public class GameManager : MonoBehaviour
             // Jei pinigų dar yra, čia galite įdėti logiką kitam raundui pradėti.
             // Kol kas galime tiesiog palikti tuščią arba atspausdinti žinutę.
             Debug.Log("Pinigų dar yra. Laukiamas naujas raundas...");
+        }
+
+        // 1. Parodome rezultatą ekrane
+        if (resultText != null)
+        {
+            resultText.text = result;
+            resultText.gameObject.SetActive(true);
+        }
+
+        // 2. Patikriname, ar žaidėjui baigėsi pinigai
+        if (playerBudget < currentBet)
+        {
+            Debug.Log("You ran out of money! Gameover.");
+            StartCoroutine(GameOverSequence()); // (Jūsų praeitame žingsnyje sukurta funkcija)
         }
     }
 
@@ -397,4 +422,39 @@ public class GameManager : MonoBehaviour
         // SVARBU: Pavadinimas turi tiksliai atitikti jūsų scenos failo pavadinimą!
         SceneManager.LoadScene("End_screen");
     }
+
+
+    [Header("Score UI")]
+    public TextMeshProUGUI playerScoreText;
+    public TextMeshProUGUI dealerScoreText;
+
+
+
+    private void UpdateScoreUI()
+    {
+        // Atnaujiname žaidėjo taškus
+        if (playerScoreText != null)
+        {
+            playerScoreText.text = "Points: " + playerScore.ToString();
+        }
+
+        // Atnaujiname dalintojo taškus
+        if (dealerScoreText != null)
+        {
+            // Jei dabar žaidėjo eilė, rodoma TIK atversta dalintojo korta
+            if (currentState == GameState.Dealing || currentState == GameState.PlayerTurn)
+            {
+                dealerScoreText.text = "Points: " + dealerFirstCardValue.ToString();
+            }
+            else // Kai dalintojas atverčia kortą (DealerTurn arba RoundOver), rodome visą sumą
+            {
+                dealerScoreText.text = "Points: " + dealerScore.ToString();
+            }
+        }
+    }
+
+    [Header("Raundo pabaigos UI")]
+    public TextMeshProUGUI resultText;
+
+    
 }
