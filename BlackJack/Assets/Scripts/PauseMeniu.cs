@@ -21,14 +21,12 @@ public class PauseMeniu : MonoBehaviour
     {
         if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
 
-        float initialVolume = AudioListener.volume;
+        float savedVolume = PlayerPrefs.GetFloat("Volume", 1f);
+        AudioListener.volume = savedVolume;
 
         if (soundSlider != null)
-        {
-            soundSlider.SetValueWithoutNotify(initialVolume);
-        }
+            soundSlider.SetValueWithoutNotify(savedVolume);
 
-        // Kviečiame be jokių skaičių skliausteliuose!
         UpdateIcon();
     }
 
@@ -53,13 +51,11 @@ public class PauseMeniu : MonoBehaviour
     public void OnSliderValueChanged(float volume)
     {
         AudioListener.volume = volume;
+        PlayerPrefs.SetFloat("Volume", volume);
 
         if (volume > 0.01f)
-        {
             savedVolumeBeforeMute = volume;
-        }
 
-        // Kviečiame be jokių skaičių!
         UpdateIcon();
     }
 

@@ -1260,9 +1260,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 518127230}
-        m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: SetVolume
-        m_Mode: 4
+        m_TargetAssemblyTypeName: PauseMeniu, Assembly-CSharp
+        m_MethodName: OnSliderValueChanged
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4415,6 +4415,80 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915271325}
   m_CullTransparentMesh: 1
+--- !u!1 &1959218995
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1959218997}
+  - component: {fileID: 1959218996}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1959218996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959218995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1420611fb180adc47a43f37095eb2402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  playerCardSounds:
+  - name: 
+    clip: {fileID: 8300000, guid: 698473c15f42f7240b949da35c092f04, type: 3}
+    volume: 0.223
+  - name: 
+    clip: {fileID: 8300000, guid: d145f39dc4ce5334dae32f351896a3fd, type: 3}
+    volume: 0.095
+  - name: 
+    clip: {fileID: 8300000, guid: b7d9779d7b2df85439995239eca7cad8, type: 3}
+    volume: 0.119
+  dealerCardSounds:
+  - name: 
+    clip: {fileID: 8300000, guid: 698473c15f42f7240b949da35c092f04, type: 3}
+    volume: 0.223
+  - name: 
+    clip: {fileID: 8300000, guid: d145f39dc4ce5334dae32f351896a3fd, type: 3}
+    volume: 0.095
+  - name: 
+    clip: {fileID: 8300000, guid: b7d9779d7b2df85439995239eca7cad8, type: 3}
+    volume: 0.119
+  flipSounds:
+  - name: 
+    clip: {fileID: 8300000, guid: 26b4d0d41d4dda54d93d4cfcf248088c, type: 3}
+    volume: 0.206
+  - name: 
+    clip: {fileID: 8300000, guid: c60e376a5e5dda048b7059820c3197fe, type: 3}
+    volume: 0.217
+  - name: 
+    clip: {fileID: 8300000, guid: 55706f75fbc4bce4a9df8eab7da00225, type: 3}
+    volume: 0.212
+--- !u!4 &1959218997
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959218995}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1084.2078, y: 536.4491, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1987379570
 GameObject:
   m_ObjectHideFlags: 0
@@ -4803,3 +4877,4 @@ SceneRoots:
   - {fileID: 660035034}
   - {fileID: 1075810840}
   - {fileID: 518127228}
+  - {fileID: 1959218997}
