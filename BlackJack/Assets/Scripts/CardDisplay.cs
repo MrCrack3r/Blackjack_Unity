@@ -14,10 +14,8 @@ public class CardDisplay : MonoBehaviour
     public void SetupCard(Sprite frontSprite, bool faceUp = true)
     {
         if (cardImage == null) cardImage = GetComponent<Image>();
-
         cardFrontSprite = frontSprite;
         isFaceUp = faceUp;
-
         UpdateCardVisual();
     }
 
@@ -43,6 +41,9 @@ public class CardDisplay : MonoBehaviour
         isFaceUp = faceUp;
         UpdateCardVisual();
 
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayFlipSound();
+
         t = 0f;
         while (t < duration)
         {
@@ -58,7 +59,6 @@ public class CardDisplay : MonoBehaviour
     private void UpdateCardVisual()
     {
         if (cardImage == null) return;
-
         if (isFaceUp)
             cardImage.sprite = cardFrontSprite;
         else
