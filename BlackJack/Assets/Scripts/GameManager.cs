@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     [Header("Kortų dalinimo nustatymai")]
     public GameObject cardPrefab;
     public Transform playerHandArea;
+    public Transform playerSplitHandArea;
     public Transform dealerHandArea;
     public Sprite[] testCardSprites;
     public int[] testCardValues;
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
     public Button hitButton;
     public Button standButton;
     public Button doubleButton;
+    public Button splitButton;
 
     [Header("Money UI")]
     public TextMeshProUGUI budgetText;
@@ -49,12 +51,37 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI resultText;
 
     private CardDisplay dealerHiddenCard;
-    private int playerScore;
+
+    // Dealer
     private int dealerScore;
-    private int playerAcesAsEleven;
     private int dealerAcesAsEleven;
+
+    // Pirma ranka
+    private int playerScore;
+    private int playerAcesAsEleven;
     private int playerCardCount;
+
+    // Antra ranka po split
+    private int splitPlayerScore;
+    private int splitPlayerAcesAsEleven;
+    private int splitPlayerCardCount;
+
+    // Split būsena
+    private bool hasSplit = false;
+    private int activeHandIndex = 0; // 0 = pirma ranka, 1 = antra ranka
+
+    // Double
     private bool doubleUsed;
+
+    // Statymai per rankas
+    private int firstHandBet;
+    private int secondHandBet;
+
+    // Pirmos dvi žaidėjo kortos split patikrai
+    private CardDisplay firstPlayerCardDisplay;
+    private CardDisplay secondPlayerCardDisplay;
+    private int firstPlayerCardValue;
+    private int secondPlayerCardValue;
 
     private void Awake()
     {
@@ -96,7 +123,12 @@ public class GameManager : MonoBehaviour
                     Debug.Log("Nebėra pinigų statymui!");
                     return;
                 }
+
+                if (resultText != null) resultText.gameObject.SetActive(false);
+
                 playerBudget -= currentBet;
+                firstHandBet = currentBet;
+                secondHandBet = 0;
                 UpdateMoneyUI();
                 ChangeState(GameState.Dealing);
                 break;
@@ -106,7 +138,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameState.PlayerTurn:
-                Debug.Log($"Žaidėjo ėjimas. Taškai: {playerScore}");
+                Debug.Log($"Žaidėjo ėjimas. Aktyvi ranka: {activeHandIndex + 1}");
+                UpdateScoreUI();
                 break;
 
             case GameState.DealerTurn:
@@ -124,33 +157,65 @@ public class GameManager : MonoBehaviour
         ClearHand(playerHandArea);
         ClearHand(dealerHandArea);
 
+        if (playerSplitHandArea != null)
+            ClearHand(playerSplitHandArea);
+
+        // Reset
         playerScore = 0;
         dealerScore = 0;
+        splitPlayerScore = 0;
+
         playerAcesAsEleven = 0;
         dealerAcesAsEleven = 0;
+        splitPlayerAcesAsEleven = 0;
+
         playerCardCount = 0;
+        splitPlayerCardCount = 0;
+
         doubleUsed = false;
+        hasSplit = false;
+        activeHandIndex = 0;
+
         dealerHiddenCard = null;
         dealerFirstCardValue = 0;
+
+        firstPlayerCardDisplay = null;
+        secondPlayerCardDisplay = null;
+        firstPlayerCardValue = 0;
+        secondPlayerCardValue = 0;
 
         Debug.Log("Dalinamos kortos...");
 
         int value;
 
-        CardDisplay player1 = SpawnCard(playerHandArea, true, out value);
-        if (player1 != null) AddCardToPlayer(value);
+        firstPlayerCardDisplay = SpawnCard(playerHandArea, true, out value);
+        if (firstPlayerCardDisplay != null)
+        {
+            firstPlayerCardValue = value;
+            AddCardToHand(0, value);
+        }
         yield return new WaitForSeconds(0.8f);
 
         CardDisplay dealer1 = SpawnCard(dealerHandArea, true, out value);
-        if (dealer1 != null) { dealerFirstCardValue = value; AddCardToDealer(value); }
+        if (dealer1 != null)
+        {
+            dealerFirstCardValue = value;
+            AddCardToDealer(value);
+        }
         yield return new WaitForSeconds(0.8f);
 
-        CardDisplay player2 = SpawnCard(playerHandArea, true, out value);
-        if (player2 != null) AddCardToPlayer(value);
+        secondPlayerCardDisplay = SpawnCard(playerHandArea, true, out value);
+        if (secondPlayerCardDisplay != null)
+        {
+            secondPlayerCardValue = value;
+            AddCardToHand(0, value);
+        }
         yield return new WaitForSeconds(0.8f);
 
         dealerHiddenCard = SpawnCard(dealerHandArea, false, out value, playSound: true);
-        AddHiddenCardToDealer(value);
+        if (dealerHiddenCard != null)
+            AddHiddenCardToDealer(value);
+
         yield return new WaitForSeconds(0.8f);
 
         Debug.Log($"Žaidėjo taškai po dalinimo: {playerScore}");
@@ -185,7 +250,7 @@ public class GameManager : MonoBehaviour
 
         if (playSound && AudioManager.Instance != null)
         {
-            if (area == playerHandArea)
+            if (area == playerHandArea || area == playerSplitHandArea)
                 AudioManager.Instance.PlayPlayerCardSound();
             else if (area == dealerHandArea)
                 AudioManager.Instance.PlayDealerCardSound();
@@ -194,14 +259,26 @@ public class GameManager : MonoBehaviour
         return display;
     }
 
-    private void AddCardToPlayer(int value)
+    private void AddCardToHand(int handIndex, int value)
     {
-        playerScore += value;
-        if (value == 11) playerAcesAsEleven++;
-        AdjustForAces(ref playerScore, ref playerAcesAsEleven);
-        playerCardCount++;
+        if (handIndex == 0)
+        {
+            playerScore += value;
+            if (value == 11) playerAcesAsEleven++;
+            AdjustForAces(ref playerScore, ref playerAcesAsEleven);
+            playerCardCount++;
+            Debug.Log($"Žaidėjo 1 ranka gavo kortą už {value}. Iš viso: {playerScore}");
+        }
+        else
+        {
+            splitPlayerScore += value;
+            if (value == 11) splitPlayerAcesAsEleven++;
+            AdjustForAces(ref splitPlayerScore, ref splitPlayerAcesAsEleven);
+            splitPlayerCardCount++;
+            Debug.Log($"Žaidėjo 2 ranka gavo kortą už {value}. Iš viso: {splitPlayerScore}");
+        }
+
         UpdateScoreUI();
-        Debug.Log($"Žaidėjas gavo kortą už {value}. Iš viso: {playerScore}");
     }
 
     private void AddCardToDealer(int value)
@@ -218,7 +295,7 @@ public class GameManager : MonoBehaviour
         dealerScore += value;
         if (value == 11) dealerAcesAsEleven++;
         AdjustForAces(ref dealerScore, ref dealerAcesAsEleven);
-        Debug.Log($"Dalintojo antroji korta yra paslėpta");
+        Debug.Log("Dalintojo antroji korta yra paslėpta");
     }
 
     private void AdjustForAces(ref int score, ref int acesAsEleven)
@@ -235,19 +312,59 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.PlayerTurn) return;
 
         int value;
-        CardDisplay playerhit = SpawnCard(playerHandArea, true, out value);
-        if (playerhit != null) AddCardToPlayer(value);
 
-        if (playerScore > 21)
+        if (activeHandIndex == 0)
         {
-            Debug.Log("Žaidėjas bust!");
-            ChangeState(GameState.RoundOver);
+            CardDisplay playerhit = SpawnCard(playerHandArea, true, out value);
+            if (playerhit != null) AddCardToHand(0, value);
+
+            if (playerScore > 21)
+            {
+                Debug.Log("Žaidėjo 1 ranka bust!");
+
+                if (hasSplit)
+                {
+                    activeHandIndex = 1;
+                    Debug.Log("Pereinama prie 2 rankos.");
+                    UpdateButtons();
+                    UpdateScoreUI();
+                }
+                else
+                {
+                    ChangeState(GameState.RoundOver);
+                }
+            }
+        }
+        else
+        {
+            CardDisplay splitHit = SpawnCard(playerSplitHandArea, true, out value);
+            if (splitHit != null) AddCardToHand(1, value);
+
+            if (splitPlayerScore > 21)
+            {
+                Debug.Log("Žaidėjo 2 ranka bust!");
+
+                if (playerScore > 21)
+                    ChangeState(GameState.RoundOver);
+                else
+                    ChangeState(GameState.DealerTurn);
+            }
         }
     }
 
     public void Stand()
     {
         if (currentState != GameState.PlayerTurn) return;
+
+        if (hasSplit && activeHandIndex == 0)
+        {
+            activeHandIndex = 1;
+            Debug.Log("Baigta 1 ranka. Pereinama prie 2 rankos.");
+            UpdateButtons();
+            UpdateScoreUI();
+            return;
+        }
+
         Debug.Log("Žaidėjas pasirinko Stand.");
         ChangeState(GameState.DealerTurn);
     }
@@ -256,23 +373,126 @@ public class GameManager : MonoBehaviour
     {
         if (currentState != GameState.PlayerTurn) return;
 
+        // Paprastumo dėlei double po split neleistas
+        if (hasSplit)
+        {
+            Debug.Log("Double po split šioje versijoje negalimas.");
+            return;
+        }
+
         if (playerCardCount != 2)
         {
             Debug.Log("Double galima tik su pirmomis 2 kortomis.");
             return;
         }
 
-        currentBet *= 2;
+        if (playerBudget < firstHandBet)
+        {
+            Debug.Log("Nepakanka biudžeto double statymui.");
+            return;
+        }
+
+        playerBudget -= firstHandBet;
+        firstHandBet *= 2;
+        doubleUsed = true;
+        UpdateMoneyUI();
 
         int value;
         CardDisplay playerdouble = SpawnCard(playerHandArea, true, out value);
-        if (playerdouble != null) AddCardToPlayer(value);
+        if (playerdouble != null) AddCardToHand(0, value);
 
-        ChangeState(GameState.DealerTurn);
+        if (playerScore > 21)
+            ChangeState(GameState.RoundOver);
+        else
+            ChangeState(GameState.DealerTurn);
+    }
+
+    public void Split()
+    {
+        if (currentState != GameState.PlayerTurn) return;
+
+        if (hasSplit)
+        {
+            Debug.Log("Split jau buvo panaudotas.");
+            return;
+        }
+
+        if (playerSplitHandArea == null)
+        {
+            Debug.LogError("playerSplitHandArea nėra priskirtas!");
+            return;
+        }
+
+        if (playerCardCount != 2)
+        {
+            Debug.Log("Split galima tik su pirmomis 2 kortomis.");
+            return;
+        }
+
+        if (firstPlayerCardValue != secondPlayerCardValue)
+        {
+            Debug.Log("Split galima tik kai abi pirmos kortos vienodos vertės.");
+            return;
+        }
+
+        if (playerBudget < currentBet)
+        {
+            Debug.Log("Nepakanka biudžeto split statymui.");
+            return;
+        }
+
+        hasSplit = true;
+        activeHandIndex = 0;
+        secondHandBet = currentBet;
+        playerBudget -= secondHandBet;
+        UpdateMoneyUI();
+
+        // Perkeliam antrą kortą į split rankos zoną
+        if (secondPlayerCardDisplay != null)
+            secondPlayerCardDisplay.transform.SetParent(playerSplitHandArea, false);
+
+        // Perskaičiuojam abi rankas nuo nulio
+        playerScore = 0;
+        playerAcesAsEleven = 0;
+        playerCardCount = 0;
+
+        splitPlayerScore = 0;
+        splitPlayerAcesAsEleven = 0;
+        splitPlayerCardCount = 0;
+
+        AddCardToHand(0, firstPlayerCardValue);
+        AddCardToHand(1, secondPlayerCardValue);
+
+        // Po vieną naują kortą kiekvienai rankai
+        int value;
+
+        CardDisplay firstHandNewCard = SpawnCard(playerHandArea, true, out value);
+        if (firstHandNewCard != null) AddCardToHand(0, value);
+
+        CardDisplay secondHandNewCard = SpawnCard(playerSplitHandArea, true, out value);
+        if (secondHandNewCard != null) AddCardToHand(1, value);
+
+        Debug.Log("Split atliktas.");
+        UpdateButtons();
+        UpdateScoreUI();
     }
 
     private IEnumerator DealerPlayRoutine()
     {
+        // Jei abi rankos bust po split, dealerio ėjimo nereikia
+        if (hasSplit && playerScore > 21 && splitPlayerScore > 21)
+        {
+            ChangeState(GameState.RoundOver);
+            yield break;
+        }
+
+        // Jei viena ranka be split bust, dealerio nereikia
+        if (!hasSplit && playerScore > 21)
+        {
+            ChangeState(GameState.RoundOver);
+            yield break;
+        }
+
         yield return new WaitForSeconds(1.5f);
 
         if (dealerHiddenCard != null)
@@ -299,30 +519,39 @@ public class GameManager : MonoBehaviour
 
     private void HandleRoundOver()
     {
-        string result;
+        string result = "";
 
-        if (playerScore > 21)
+        if (!hasSplit)
         {
-            result = "Player lost (Bust)";
-        }
-        else if (dealerScore > 21)
-        {
-            result = "Player won!";
-            playerBudget += currentBet * 2;
-        }
-        else if (playerScore > dealerScore)
-        {
-            result = "Player won!";
-            playerBudget += currentBet * 2;
-        }
-        else if (playerScore < dealerScore)
-        {
-            result = "Dealer won.";
+            if (playerScore > 21)
+            {
+                result = "Player lost (Bust)";
+            }
+            else if (dealerScore > 21)
+            {
+                result = "Player won!";
+                playerBudget += firstHandBet * 2;
+            }
+            else if (playerScore > dealerScore)
+            {
+                result = "Player won!";
+                playerBudget += firstHandBet * 2;
+            }
+            else if (playerScore < dealerScore)
+            {
+                result = "Dealer won.";
+            }
+            else
+            {
+                result = "Push";
+                playerBudget += firstHandBet;
+            }
         }
         else
         {
-            result = "Push";
-            playerBudget += currentBet;
+            string hand1Result = ResolveSingleHand(playerScore, firstHandBet, "Hand 1");
+            string hand2Result = ResolveSingleHand(splitPlayerScore, secondHandBet, "Hand 2");
+            result = hand1Result + "\n" + hand2Result;
         }
 
         Debug.Log(result);
@@ -345,25 +574,73 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private string ResolveSingleHand(int handScore, int handBet, string handName)
+    {
+        if (handScore > 21)
+        {
+            return handName + ": Lost (Bust)";
+        }
+        else if (dealerScore > 21)
+        {
+            playerBudget += handBet * 2;
+            return handName + ": Won";
+        }
+        else if (handScore > dealerScore)
+        {
+            playerBudget += handBet * 2;
+            return handName + ": Won";
+        }
+        else if (handScore < dealerScore)
+        {
+            return handName + ": Lost";
+        }
+        else
+        {
+            playerBudget += handBet;
+            return handName + ": Push";
+        }
+    }
+
     private void UpdateButtons()
     {
         bool playerTurn = currentState == GameState.PlayerTurn;
 
-        if (hitButton != null) hitButton.interactable = playerTurn;
-        if (standButton != null) standButton.interactable = playerTurn;
-        if (doubleButton != null) doubleButton.interactable = playerTurn && playerCardCount == 2 && !doubleUsed;
+        if (hitButton != null)
+            hitButton.interactable = playerTurn;
+
+        if (standButton != null)
+            standButton.interactable = playerTurn;
+
+        if (doubleButton != null)
+            doubleButton.interactable = playerTurn && !hasSplit && activeHandIndex == 0 && playerCardCount == 2 && !doubleUsed;
+
+        if (splitButton != null)
+            splitButton.interactable = playerTurn &&
+                                      !hasSplit &&
+                                      playerCardCount == 2 &&
+                                      firstPlayerCardValue == secondPlayerCardValue &&
+                                      playerBudget >= currentBet;
     }
 
     private void ClearHand(Transform area)
     {
+        if (area == null) return;
+
         for (int i = area.childCount - 1; i >= 0; i--)
             Destroy(area.GetChild(i).gameObject);
     }
 
     private void UpdateMoneyUI()
     {
-        if (budgetText != null) budgetText.text = "$" + playerBudget;
-        if (currentBetText != null) currentBetText.text = "$" + currentBet;
+        if (budgetText != null)
+            budgetText.text = "$" + playerBudget;
+
+        if (currentBetText != null)
+        {
+            int shownBet = firstHandBet + secondHandBet;
+            if (shownBet <= 0) shownBet = currentBet;
+            currentBetText.text = "$" + shownBet;
+        }
     }
 
     private IEnumerator GameOverSequence()
@@ -375,7 +652,17 @@ public class GameManager : MonoBehaviour
     private void UpdateScoreUI()
     {
         if (playerScoreText != null)
-            playerScoreText.text = "Points: " + playerScore.ToString();
+        {
+            if (!hasSplit)
+            {
+                playerScoreText.text = "Points: " + playerScore;
+            }
+            else
+            {
+                string activeText = activeHandIndex == 0 ? " (Hand 1)" : " (Hand 2)";
+                playerScoreText.text = $"H1: {playerScore} | H2: {splitPlayerScore}{activeText}";
+            }
+        }
 
         if (dealerScoreText != null)
         {
