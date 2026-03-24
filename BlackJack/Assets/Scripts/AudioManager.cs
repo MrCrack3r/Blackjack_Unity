@@ -12,13 +12,8 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("Žaidėjo kortos garsai")]
     public SoundClip[] playerCardSounds;
-
-    [Header("Dalintojo kortos garsai")]
     public SoundClip[] dealerCardSounds;
-
-    [Header("Kortos apvertimo garsai")]
     public SoundClip[] flipSounds;
 
     private AudioSource audioSource;
@@ -35,33 +30,35 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-    }
 
-    private void Start()
-    {
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     public void PlayPlayerCardSound()
     {
-        if (playerCardSounds == null || playerCardSounds.Length == 0) return;
-        int index = Random.Range(0, playerCardSounds.Length);
-        audioSource.PlayOneShot(playerCardSounds[index].clip, playerCardSounds[index].volume);
+        PlayRandom(playerCardSounds);
     }
 
     public void PlayDealerCardSound()
     {
-        if (dealerCardSounds == null || dealerCardSounds.Length == 0) return;
-        int index = Random.Range(0, dealerCardSounds.Length);
-        audioSource.PlayOneShot(dealerCardSounds[index].clip, dealerCardSounds[index].volume);
+        PlayRandom(dealerCardSounds);
     }
 
     public void PlayFlipSound()
     {
-        if (flipSounds == null || flipSounds.Length == 0) return;
-        int index = Random.Range(0, flipSounds.Length);
-        audioSource.PlayOneShot(flipSounds[index].clip, flipSounds[index].volume);
+        PlayRandom(flipSounds);
+    }
+
+    private void PlayRandom(SoundClip[] sounds)
+    {
+        if (audioSource == null) return;
+        if (sounds == null || sounds.Length == 0) return;
+
+        int index = Random.Range(0, sounds.Length);
+        SoundClip s = sounds[index];
+        if (s == null || s.clip == null) return;
+
+        audioSource.PlayOneShot(s.clip, s.volume);
     }
 }
