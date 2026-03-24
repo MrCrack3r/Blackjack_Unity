@@ -517,7 +517,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8417152283090183305, guid: d0ea291df1cf57f468938bcd3257e76b, type: 3}
+  m_Sprite: {fileID: -2608104178658161319, guid: 15c6eb2f69c11c045a516090670b85ff, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -617,7 +617,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1438210710}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 99952586}
+        m_TargetAssemblyTypeName: EndScreen, Assembly-CSharp
+        m_MethodName: DealAgain
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1438210710
 MonoBehaviour:
   m_ObjectHideFlags: 0
