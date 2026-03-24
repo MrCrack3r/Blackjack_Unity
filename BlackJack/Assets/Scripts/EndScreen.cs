@@ -17,6 +17,6 @@ public class EndScreen : MonoBehaviour
     {
         Debug.Log("Kraunamas žaidimas iš naujo...");
         // Įkeliame žaidimo stalą. Įsitikinkite, kad pavadinimas tiksliai toks!
-        SceneManager.LoadScene("Blackjack_table_scene");
+        SceneManager.LoadScene("Backjack_table_scene");
     }
 }
