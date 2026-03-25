@@ -600,7 +600,7 @@ public class GameManager : MonoBehaviour
             resultText.gameObject.SetActive(true);
         }
 
-        if (playerBudget < currentBet)
+        if (playerBudget <= 0)
         {
             Debug.Log("Pinigai baigėsi! Žaidimas baigtas.");
             StartCoroutine(GameOverSequence());
