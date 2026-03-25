@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
     public GameState currentState;
+    public CanvasGroup chipCanvasGroup;
 
     [Header("Kortų dalinimo nustatymai")]
     public GameObject cardPrefab;
@@ -322,6 +323,25 @@ public class GameManager : MonoBehaviour
             score -= 10;
             acesAsEleven--;
         }
+    }
+
+    public void AddBet(int amount)
+    {
+        if (currentState != GameState.Betting)
+        {
+            Debug.Log("Negalima statyti dabar!");
+            return;
+        }
+
+        if (playerBudget < amount)
+        {
+            Debug.Log("Nepakanka pinigų!");
+            return;
+        }
+
+        currentBet += amount;
+
+        UpdateMoneyUI();
     }
 
     public void Hit()
@@ -639,6 +659,15 @@ public class GameManager : MonoBehaviour
                                       playerBudget >= currentBet;
         if (dealButton != null)
             dealButton.interactable = currentState == GameState.Betting;
+
+        if (chipCanvasGroup != null)
+        {
+            bool isBetting = currentState == GameState.Betting;
+
+            chipCanvasGroup.alpha = isBetting ? 1f : 0.4f;
+            chipCanvasGroup.interactable = isBetting;
+            chipCanvasGroup.blocksRaycasts = isBetting;
+        }
 
     }
 
