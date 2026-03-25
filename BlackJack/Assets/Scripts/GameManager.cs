@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     public Button standButton;
     public Button doubleButton;
     public Button splitButton;
+    public Button dealButton;
 
     [Header("Money UI")]
     public TextMeshProUGUI budgetText;
@@ -118,19 +119,10 @@ public class GameManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Betting:
-                if (playerBudget < currentBet)
-                {
-                    Debug.Log("Nebėra pinigų statymui!");
-                    return;
-                }
-
                 if (resultText != null) resultText.gameObject.SetActive(false);
 
-                playerBudget -= currentBet;
-                firstHandBet = currentBet;
-                secondHandBet = 0;
-                UpdateMoneyUI();
-                ChangeState(GameState.Dealing);
+                Debug.Log("Laukiama Deal mygtuko...");
+
                 break;
 
             case GameState.Dealing:
@@ -150,7 +142,32 @@ public class GameManager : MonoBehaviour
                 HandleRoundOver();
                 break;
         }
+
     }
+
+    public void OnDealButton()
+    {
+        if (currentState != GameState.Betting)
+        {
+            Debug.Log("Dabar negalima dealinti!");
+            return;
+        }
+
+        if (playerBudget < currentBet)
+        {
+            Debug.Log("Nepakanka pinigų!");
+            return;
+        }
+
+        playerBudget -= currentBet;
+        firstHandBet = currentBet;
+        secondHandBet = 0;
+
+        UpdateMoneyUI();
+
+        ChangeState(GameState.Dealing);
+    }
+
 
     private IEnumerator HandleDealing()
     {
@@ -620,6 +637,9 @@ public class GameManager : MonoBehaviour
                                       playerCardCount == 2 &&
                                       firstPlayerCardValue == secondPlayerCardValue &&
                                       playerBudget >= currentBet;
+        if (dealButton != null)
+            dealButton.interactable = currentState == GameState.Betting;
+
     }
 
     private void ClearHand(Transform area)
