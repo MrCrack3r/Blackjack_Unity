@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Money Settings")]
     public int playerBudget = 200;
-    public int currentBet = 20;
+    public int currentBet = 0;
 
     [Header("Score UI")]
     public TextMeshProUGUI playerScoreText;
@@ -94,6 +94,10 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         if (resultText != null) resultText.gameObject.SetActive(false);
+
+        firstHandBet = 0;
+        secondHandBet = 0;
+
         UpdateMoneyUI();
         ChangeState(GameState.Betting);
     }
@@ -121,6 +125,9 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Betting:
                 if (resultText != null) resultText.gameObject.SetActive(false);
+
+                firstHandBet = 0;
+                secondHandBet = 0;
 
                 Debug.Log("Laukiama Deal mygtuko...");
 
@@ -151,6 +158,12 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.Betting)
         {
             Debug.Log("Dabar negalima dealinti!");
+            return;
+        }
+
+        if (currentBet <= 0)
+        {
+            Debug.Log("Pasirink statymą prieš žaidimą!");
             return;
         }
 
@@ -609,6 +622,9 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Pinigų dar yra. Laukiamas naujas raundas...");
         }
+
+        currentBet = 0;
+        UpdateMoneyUI();
     }
 
     private string ResolveSingleHand(int handScore, int handBet, string handName)
