@@ -1858,7 +1858,7 @@ MonoBehaviour:
   budgetText: {fileID: 1590846684}
   currentBetText: {fileID: 2116530577}
   playerBudget: 200
-  currentBet: 10
+  currentBet: 0
   playerScoreText: {fileID: 231835593}
   dealerScoreText: {fileID: 186541384}
   resultText: {fileID: 249933924}
