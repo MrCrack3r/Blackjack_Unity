@@ -89,4 +89,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardDisplay
   cardImage: {fileID: 0}
-  cardBackSprite: {fileID: -574609998, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}
+  cardBackSprite: {fileID: -208088171, guid: 6d693e31750ad854293b0e1254aa1f6b, type: 3}

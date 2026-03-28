@@ -52,6 +52,10 @@ public class GameManager : MonoBehaviour
     [Header("Raundo pabaigos UI")]
     public TextMeshProUGUI resultText;
 
+    [Header("Deck pozicija")]
+    public Transform deckPosition;
+    public Canvas rootCanvas;
+
     private CardDisplay dealerHiddenCard;
 
     // Dealer
@@ -191,25 +195,19 @@ public class GameManager : MonoBehaviour
         if (playerSplitHandArea != null)
             ClearHand(playerSplitHandArea);
 
-        // Reset
         playerScore = 0;
         dealerScore = 0;
         splitPlayerScore = 0;
-
         playerAcesAsEleven = 0;
         dealerAcesAsEleven = 0;
         splitPlayerAcesAsEleven = 0;
-
         playerCardCount = 0;
         splitPlayerCardCount = 0;
-
         doubleUsed = false;
         hasSplit = false;
         activeHandIndex = 0;
-
         dealerHiddenCard = null;
         dealerFirstCardValue = 0;
-
         firstPlayerCardDisplay = null;
         secondPlayerCardDisplay = null;
         firstPlayerCardValue = 0;
@@ -217,42 +215,61 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Dalinamos kortos...");
 
-        int value;
+        int value = 0;
+        CardDisplay card = null;
 
-        firstPlayerCardDisplay = SpawnCard(playerHandArea, true, out value);
-        if (firstPlayerCardDisplay != null)
-        {
-            firstPlayerCardValue = value;
-            AddCardToHand(0, value);
-        }
-        yield return new WaitForSeconds(0.8f);
+        yield return StartCoroutine(SpawnCardAnimated(playerHandArea, true, true, (v, c) => { value = v; card = c; }));
+        if (card != null) { firstPlayerCardDisplay = card; firstPlayerCardValue = value; AddCardToHand(0, value); }
 
-        CardDisplay dealer1 = SpawnCard(dealerHandArea, true, out value);
-        if (dealer1 != null)
-        {
-            dealerFirstCardValue = value;
-            AddCardToDealer(value);
-        }
-        yield return new WaitForSeconds(0.8f);
+        yield return StartCoroutine(SpawnCardAnimated(dealerHandArea, true, true, (v, c) => { value = v; card = c; }));
+        if (card != null) { dealerFirstCardValue = value; AddCardToDealer(value); }
 
-        secondPlayerCardDisplay = SpawnCard(playerHandArea, true, out value);
-        if (secondPlayerCardDisplay != null)
-        {
-            secondPlayerCardValue = value;
-            AddCardToHand(0, value);
-        }
-        yield return new WaitForSeconds(0.8f);
+        yield return StartCoroutine(SpawnCardAnimated(playerHandArea, true, true, (v, c) => { value = v; card = c; }));
+        if (card != null) { secondPlayerCardDisplay = card; secondPlayerCardValue = value; AddCardToHand(0, value); }
 
-        dealerHiddenCard = SpawnCard(dealerHandArea, false, out value, playSound: true);
-        if (dealerHiddenCard != null)
-            AddHiddenCardToDealer(value);
-
-        yield return new WaitForSeconds(0.8f);
+        yield return StartCoroutine(SpawnCardAnimated(dealerHandArea, false, true, (v, c) => { value = v; card = c; }));
+        if (card != null) { dealerHiddenCard = card; AddHiddenCardToDealer(value); }
 
         Debug.Log($"Žaidėjo taškai po dalinimo: {playerScore}");
         UpdateScoreUI();
         ChangeState(GameState.PlayerTurn);
     }
+
+    private IEnumerator SpawnCardAnimated(Transform area, bool faceUp, bool playSound, System.Action<int, CardDisplay> onDone)
+    {
+        if (testCardSprites == null || testCardSprites.Length == 0) { onDone?.Invoke(0, null); yield break; }
+        if (testCardValues == null || testCardValues.Length != testCardSprites.Length) { onDone?.Invoke(0, null); yield break; }
+
+        GameObject newCard = Instantiate(cardPrefab, area);
+        CardDisplay display = newCard.GetComponent<CardDisplay>();
+
+        int randomIndex = Random.Range(0, testCardSprites.Length);
+        Sprite randomSprite = testCardSprites[randomIndex];
+        int cardValue = testCardValues[randomIndex];
+
+        display.SetupCard(randomSprite, false);
+
+        yield return null;
+
+        Vector3 startPos = deckPosition != null ? deckPosition.position : area.position;
+
+        bool done = false;
+        display.PlayDealAnimation(startPos, faceUp, rootCanvas, () =>
+        {
+            if (playSound && AudioManager.Instance != null)
+            {
+                if (area == playerHandArea || area == playerSplitHandArea)
+                    AudioManager.Instance.PlayPlayerCardSound();
+                else if (area == dealerHandArea)
+                    AudioManager.Instance.PlayDealerCardSound();
+            }
+            done = true;
+        });
+
+        yield return new WaitUntil(() => done);
+        onDone?.Invoke(cardValue, display);
+    }
+
 
     private CardDisplay SpawnCard(Transform area, bool faceUp, out int cardValue, bool playSound = true)
     {
@@ -529,14 +546,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DealerPlayRoutine()
     {
-        // Jei abi rankos bust po split, dealerio ėjimo nereikia
         if (hasSplit && playerScore > 21 && splitPlayerScore > 21)
         {
             ChangeState(GameState.RoundOver);
             yield break;
         }
 
-        // Jei viena ranka be split bust, dealerio nereikia
         if (!hasSplit && playerScore > 21)
         {
             ChangeState(GameState.RoundOver);
@@ -557,10 +572,11 @@ public class GameManager : MonoBehaviour
         while (dealerScore < 17)
         {
             Debug.Log($"Dalintojas turi {dealerScore} taškų. Traukia dar vieną kortą...");
-            int value;
-            SpawnCard(dealerHandArea, true, out value, playSound: true);
-            AddCardToDealer(value);
-            yield return new WaitForSeconds(1.5f);
+
+            int value = 0;
+            CardDisplay card = null;
+            yield return StartCoroutine(SpawnCardAnimated(dealerHandArea, true, true, (v, c) => { value = v; card = c; }));
+            if (card != null) AddCardToDealer(value);
         }
 
         Debug.Log($"Dalintojas baigia ėjimą su {dealerScore} taškais.");
