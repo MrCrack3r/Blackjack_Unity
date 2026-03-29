@@ -232,6 +232,13 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Žaidėjo taškai po dalinimo: {playerScore}");
         UpdateScoreUI();
+
+        if (playerScore == 21 && playerCardCount == 2)
+        {
+            ChangeState(GameState.DealerTurn);
+            yield break;
+        }
+
         ChangeState(GameState.PlayerTurn);
     }
 
@@ -401,6 +408,22 @@ public class GameManager : MonoBehaviour
                     ChangeState(GameState.RoundOver);
                 }
             }
+            else if (playerScore == 21)
+            {
+                Debug.Log("Žaidėjo 1 ranka surinko 21.");
+
+                if (hasSplit)
+                {
+                    activeHandIndex = 1;
+                    Debug.Log("Pereinama prie 2 rankos.");
+                    UpdateButtons();
+                    UpdateScoreUI();
+                }
+                else
+                {
+                    ChangeState(GameState.DealerTurn);
+                }
+            }
         }
         else
         {
@@ -415,6 +438,11 @@ public class GameManager : MonoBehaviour
                     ChangeState(GameState.RoundOver);
                 else
                     ChangeState(GameState.DealerTurn);
+            }
+            else if (splitPlayerScore == 21)
+            {
+                Debug.Log("Žaidėjo 2 ranka surinko 21.");
+                ChangeState(GameState.DealerTurn);
             }
         }
     }
@@ -440,7 +468,7 @@ public class GameManager : MonoBehaviour
     {
         if (currentState != GameState.PlayerTurn) return;
 
-        // Paprastumo dėlei double po split neleistas
+        // Double po split neleistas
         if (hasSplit)
         {
             Debug.Log("Double po split šioje versijoje negalimas.");
@@ -468,10 +496,22 @@ public class GameManager : MonoBehaviour
         CardDisplay playerdouble = SpawnCard(playerHandArea, true, out value);
         if (playerdouble != null) AddCardToHand(0, value);
 
+        // 🔥 NAUJA LOGIKA
         if (playerScore > 21)
+        {
+            Debug.Log("Žaidėjas bust po double!");
             ChangeState(GameState.RoundOver);
-        else
+        }
+        else if (playerScore == 21)
+        {
+            Debug.Log("Žaidėjas surinko 21 po double.");
             ChangeState(GameState.DealerTurn);
+        }
+        else
+        {
+            // Double vis tiek baigia ėjimą
+            ChangeState(GameState.DealerTurn);
+        }
     }
 
     public void Split()
