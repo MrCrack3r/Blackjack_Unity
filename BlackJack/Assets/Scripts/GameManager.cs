@@ -56,6 +56,9 @@ public class GameManager : MonoBehaviour
     public Transform deckPosition;
     public Canvas rootCanvas;
 
+    [Header("Efektai")]
+    public EndEffects endEffects;
+
     private CardDisplay dealerHiddenCard;
 
     // Dealer
@@ -681,6 +684,14 @@ public class GameManager : MonoBehaviour
 
         currentBet = 0;
         UpdateMoneyUI();
+
+        if (endEffects != null)
+        {
+            if (result.Contains("Player won"))
+                endEffects.PlayWinEffect();
+            else if (result.Contains("Dealer won") || result.Contains("Bust"))
+                endEffects.PlayLoseEffect();
+        }
     }
 
     private string ResolveSingleHand(int handScore, int handBet, string handName)
