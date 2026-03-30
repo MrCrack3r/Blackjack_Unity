@@ -14,6 +14,12 @@ public class MainMenuManager : MonoBehaviour
     // Funkcija išėjimui iš žaidimo
     public void ExitGame()
     {
+        // Šis pranešimas pasirodys tik Unity redaktoriaus konsolėje,
+        // kad žinotumėte, jog mygtukas veikia testuojant.
+        Debug.Log("Išeinama iš žaidimo...");
+
+        // Ši komanda IŠJUNGS patį žaidimą, kai jis bus sukompiliuotas (Build).
+        // SVARBU: Ji neveikia pačiame Unity redaktoriuje (paspaudus Play)!
         Application.Quit();
     }
 }
