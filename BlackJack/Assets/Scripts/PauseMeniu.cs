@@ -44,9 +44,6 @@ public class PauseMeniu : MonoBehaviour
     public void RestartGame() { Time.timeScale = 1f; SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
     public void LoadMainMenu() { Time.timeScale = 1f; SceneManager.LoadScene("Main_menu_scene"); }
 
-    // ==========================================
-    // --- GARSO FUNKCIJOS BE JOKIŲ KONFLIKTŲ ---
-    // ==========================================
 
     public void OnSliderValueChanged(float volume)
     {
@@ -85,16 +82,13 @@ public class PauseMeniu : MonoBehaviour
             }
         }
 
-        // Kviečiame be jokių skaičių!
         UpdateIcon();
     }
 
-    // Funkcija pati žino, kur ieškoti garso lygio
     private void UpdateIcon()
     {
         if (soundIconImage != null)
         {
-            // Tikriname patį tikriausią šaltinį - Unity AudioListener
             if (AudioListener.volume <= 0.01f)
             {
                 soundIconImage.sprite = soundOffSprite;

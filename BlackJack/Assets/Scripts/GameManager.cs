@@ -471,7 +471,6 @@ public class GameManager : MonoBehaviour
     {
         if (currentState != GameState.PlayerTurn) return;
 
-        // Double po split neleistas
         if (hasSplit)
         {
             Debug.Log("Double po split šioje versijoje negalimas.");
@@ -499,7 +498,6 @@ public class GameManager : MonoBehaviour
         CardDisplay playerdouble = SpawnCard(playerHandArea, true, out value);
         if (playerdouble != null) AddCardToHand(0, value);
 
-        // 🔥 NAUJA LOGIKA
         if (playerScore > 21)
         {
             Debug.Log("Žaidėjas bust po double!");
@@ -512,7 +510,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Double vis tiek baigia ėjimą
             ChangeState(GameState.DealerTurn);
         }
     }
@@ -557,11 +554,9 @@ public class GameManager : MonoBehaviour
         playerBudget -= secondHandBet;
         UpdateMoneyUI();
 
-        // Perkeliam antrą kortą į split rankos zoną
         if (secondPlayerCardDisplay != null)
             secondPlayerCardDisplay.transform.SetParent(playerSplitHandArea, false);
 
-        // Perskaičiuojam abi rankas nuo nulio
         playerScore = 0;
         playerAcesAsEleven = 0;
         playerCardCount = 0;
@@ -573,7 +568,6 @@ public class GameManager : MonoBehaviour
         AddCardToHand(0, firstPlayerCardValue);
         AddCardToHand(1, secondPlayerCardValue);
 
-        // Po vieną naują kortą kiekvienai rankai
         int value;
 
         CardDisplay firstHandNewCard = SpawnCard(playerHandArea, true, out value);

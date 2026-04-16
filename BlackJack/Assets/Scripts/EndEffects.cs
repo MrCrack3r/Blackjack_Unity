@@ -71,7 +71,6 @@ public class EndEffects : MonoBehaviour
         Color targetColor = isWin ? new Color(1f, 0.85f, 0f) : new Color(1f, 0.2f, 0.2f);
         resultText.color = targetColor;
 
-        // Įsijungia
         float t = 0f;
         float popIn = 0.3f;
         while (t < popIn)
@@ -92,7 +91,6 @@ public class EndEffects : MonoBehaviour
             yield return null;
         }
 
-        // Laimėjimo atveju – pulsuoja
         if (isWin)
         {
             for (int i = 0; i < 3; i++)

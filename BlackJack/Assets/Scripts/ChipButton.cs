@@ -48,7 +48,6 @@ public class ChipButton : MonoBehaviour
         if (tmp != null)
             tmp.text = "+" + chipValue + "$";
 
-        // Naujas Input System
         RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector2 mousePos;
@@ -72,7 +71,6 @@ public class ChipButton : MonoBehaviour
 
         if (rt == null || tmp == null) yield break;
 
-        // Outline ir shadow per materialą (kopija kad nepakeistų kitų)
         Material mat = new Material(tmp.fontMaterial);
         mat.EnableKeyword("OUTLINE_ON");
         mat.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.25f);
@@ -94,7 +92,6 @@ public class ChipButton : MonoBehaviour
 
         rt.localScale = Vector3.one * 0.5f;
 
-        // Pop in
         float popIn = 0.15f;
         while (t < popIn)
         {
@@ -112,7 +109,6 @@ public class ChipButton : MonoBehaviour
             yield return null;
         }
 
-        // Kyla ir nyksta
         t = 0f;
         while (t < duration)
         {
