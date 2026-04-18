@@ -1,34 +1,44 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using TMPro;
 using System.Collections;
 
 public class ShopManager : MonoBehaviour
 {
-    public Button continueButton;
+    public static ShopManager instance;
+
+    [Header("UI Elementai")]
+    public TextMeshProUGUI notificationText; // Tekstas, kuris iššoks perkant
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     void Start()
     {
-        if (continueButton != null)
+        // Paslepiame pranešimą parduotuvės atidarymo metu
+        if (notificationText != null) notificationText.gameObject.SetActive(false);
+    }
+
+    // Funkcija, kurią iškviesime norėdami parodyti tekstą
+    public void ShowNotification(string message, Color color)
+    {
+        if (notificationText != null)
         {
-            continueButton.onClick.AddListener(OnContinueClicked);
-        }
-        else
-        {
-            Debug.LogError("Continue Button nėra priskirtas!");
+            StopAllCoroutines(); // Sustabdome senus pranešimus, jei žaidėjas spaudinėja greitai
+            StartCoroutine(NotificationRoutine(message, color));
         }
     }
 
-    public void OnContinueClicked()
+    private IEnumerator NotificationRoutine(string message, Color color)
     {
-        Debug.Log("Continue paspaustas!");
-        StartCoroutine(TransitionToGame());
-    }
+        notificationText.text = message;
+        notificationText.color = color;
+        notificationText.gameObject.SetActive(true);
 
-    private IEnumerator TransitionToGame()
-    {
-        yield return new WaitForSeconds(0.5f);
-        RunManager.instance.NextRound();
-        SceneManager.LoadScene("Backjack_table_scene");
+        // Rodome pranešimą 2 sekundes
+        yield return new WaitForSeconds(2f);
+
+        notificationText.gameObject.SetActive(false);
     }
 }
