@@ -9,6 +9,8 @@ public class ShopManager : MonoBehaviour
 
     void Start()
     {
+        AudioManager.Instance.PlayShopMusic();
+
         if (continueButton != null)
         {
             continueButton.onClick.AddListener(OnContinueClicked);
@@ -29,6 +31,7 @@ public class ShopManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         RunManager.instance.NextRound();
+        AudioManager.Instance.PlayGameplayMusic();
         SceneManager.LoadScene("Backjack_table_scene");
     }
 }

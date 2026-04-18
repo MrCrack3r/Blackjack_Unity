@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5687246346511907440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7554405941035338954}
+  - component: {fileID: 795667366801147178}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7554405941035338954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5687246346511907440}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1084.2078, y: 536.4491, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &795667366801147178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5687246346511907440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1420611fb180adc47a43f37095eb2402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  playerCardSounds:
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 6745831019ba4a94db73c668e9412c21, type: 3}
+    volume: 0.223
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: d145f39dc4ce5334dae32f351896a3fd, type: 3}
+    volume: 0.095
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: b7d9779d7b2df85439995239eca7cad8, type: 3}
+    volume: 0.119
+  dealerCardSounds:
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 6745831019ba4a94db73c668e9412c21, type: 3}
+    volume: 0.223
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: d145f39dc4ce5334dae32f351896a3fd, type: 3}
+    volume: 0.095
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: b7d9779d7b2df85439995239eca7cad8, type: 3}
+    volume: 0.119
+  flipSounds:
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: ef6f013838a135c4cb57c83a0611dc98, type: 3}
+    volume: 0.206
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: c60e376a5e5dda048b7059820c3197fe, type: 3}
+    volume: 0.217
+  - name: 
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 26b4d0d41d4dda54d93d4cfcf248088c, type: 3}
+    volume: 0.212
+  mainMenuMusic:
+    name: Main menu music
+    introClip: {fileID: 8300000, guid: a3ca8df8c82310f4a8ac148857b59067, type: 3}
+    loopClip: {fileID: 8300000, guid: 657781373b6641d4e97fe1640911ac65, type: 3}
+    volume: 1
+  gameplayMusic:
+    name: Gameplay music
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 31d24043b7066074c98e20bbef5bd990, type: 3}
+    volume: 1
+  loseMusic:
+    name: Loss music
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: f412b1f02f292234aa8b531a21819b5e, type: 3}
+    volume: 1
+  shopMusic:
+    name: Shop music
+    introClip: {fileID: 8300000, guid: ca8083275685ea94eb92f10eff61bdbe, type: 3}
+    loopClip: {fileID: 8300000, guid: f59504347e42f0f478ae8051cc64fcb3, type: 3}
+    volume: 0.802
+  masterMusicVolume: 0.5
+  masterSFXVolume: 0.7

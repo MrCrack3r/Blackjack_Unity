@@ -41,6 +41,11 @@ public class RunUI : MonoBehaviour
         int handReq = RunManager.instance.handsRequiredThisRound;
         int round = RunManager.instance.currentRound;
 
+        if (handNum > handReq)
+        {
+            handNum = handReq;
+        }
+
         roundText.text = $"Round {round} | Hand {handNum} / {handReq}";
     }
 
