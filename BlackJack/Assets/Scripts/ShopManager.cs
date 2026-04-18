@@ -17,14 +17,50 @@ public class ShopManager : MonoBehaviour
 
     void Start()
     {
-        // 1. Paleidžiame parduotuvės muziką
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayShopMusic();
         }
 
-        // 2. Paslepiame pranešimą parduotuvės atidarymo metu
         if (notificationText != null) notificationText.gameObject.SetActive(false);
+    }
+
+    // ==========================================
+    // PIRKIMO FUNKCIJA
+    // ==========================================
+    public void TryBuyPowerUp(PowerUpData data)
+    {
+        if (data == null) return;
+
+        // 1. Patikriname ar žaidėjas turi pakankamai pinigų
+        if (RunManager.instance != null && RunManager.instance.playerMoney >= data.baseCost)
+        {
+            // 2. Bandome pridėti į inventorių
+            if (InventoryManager.instance != null)
+            {
+                bool success = InventoryManager.instance.AddPowerUp(data);
+
+                if (success)
+                {
+                    // Atimame pinigus
+                    RunManager.instance.playerMoney -= data.baseCost;
+
+                    // Parodome sėkmės pranešimą
+                    ShowNotification("Purchased: " + data.powerUpName, Color.green);
+                    Debug.Log("Bought powerup: " + data.powerUpName);
+                }
+                else
+                {
+                    // Inventorius pilnas (jau turi 4 kortas)
+                    ShowNotification("Inventory Full!", Color.red);
+                }
+            }
+        }
+        else
+        {
+            // Nepakanka pinigų
+            ShowNotification("Not enough money!", Color.red);
+        }
     }
 
     public void ShowNotification(string message, Color color)

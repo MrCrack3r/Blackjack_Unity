@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62015eb2642ecd5469eb4b34ee63e8c8, type: 3}
+  m_Name: handshake
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
+  id: 3
+  powerUpName: Handshake
+  description: 'Premium Insurance: Get a 3x payout for hitting 21 after the deal
+    (instead of 1.5x).'
+  icon: {fileID: -3060741821731462639, guid: db717f62332f7d34db931c2c9da275c2, type: 3}
+  baseCost: 200
+  effectType: 0

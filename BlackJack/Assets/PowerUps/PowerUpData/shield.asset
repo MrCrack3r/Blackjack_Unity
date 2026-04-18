@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62015eb2642ecd5469eb4b34ee63e8c8, type: 3}
+  m_Name: shield
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
+  id: 7
+  powerUpName: Shield
+  description: 'Loss Protection: Your next losing hand will not decrease your budget.'
+  icon: {fileID: 6953840365690006960, guid: 242082fa3a100bc4dad999f29c1fd01f, type: 3}
+  baseCost: 200
+  effectType: 0

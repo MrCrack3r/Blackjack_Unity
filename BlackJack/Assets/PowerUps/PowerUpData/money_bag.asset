@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62015eb2642ecd5469eb4b34ee63e8c8, type: 3}
+  m_Name: money_bag
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
+  id: 4
+  powerUpName: Money bag
+  description: 'Quick Cash: Instantly adds +$50 to your total budget.'
+  icon: {fileID: -2235749099652460041, guid: 66c3efa15c55a9d4ca10ed6c0e88c6e6, type: 3}
+  baseCost: 200
+  effectType: 0
