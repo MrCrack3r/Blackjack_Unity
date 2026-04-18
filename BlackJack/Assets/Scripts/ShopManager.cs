@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ShopManager : MonoBehaviour
 {
@@ -40,5 +41,23 @@ public class ShopManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         notificationText.gameObject.SetActive(false);
+    }
+
+    // ==========================================
+    // NAUJA FUNKCIJA "CONTINUE" MYGTUKUI
+    // ==========================================
+    public void ContinueToNextRound()
+    {
+        Debug.Log("Parduotuvė uždaroma. Pradedamas kitas raundas!");
+
+        // 1. Padidiname raundą ir atstatome partijų skaičių (naudojame jūsų RunManager funkciją)
+        if (RunManager.instance != null)
+        {
+            RunManager.instance.NextRound();
+        }
+
+        // 2. Grįžtame atgal į žaidimo stalą. 
+        // SVARBU: Pavadinimas kabutėse turi TIKSLIAI atitikti jūsų žaidimo scenos failo pavadinimą!
+        SceneManager.LoadScene("Backjack_table_scene");
     }
 }
