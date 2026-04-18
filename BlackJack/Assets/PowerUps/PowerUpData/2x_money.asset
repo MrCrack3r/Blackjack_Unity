@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: 2x_money
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
   id: 1
-  powerUpName: 2x_money
+  powerUpName: Double the money
   description: 'Double Reward: If you win this hand, your payout is multiplied by
     2x.'
   icon: {fileID: -3129541819316655440, guid: a0b4eb51b5b17f648a2b37e59c27d455, type: 3}
   baseCost: 200
-  effectType: 0

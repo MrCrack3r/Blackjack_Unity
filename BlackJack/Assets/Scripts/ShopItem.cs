@@ -45,7 +45,6 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             if (ShopManager.instance != null)
                 ShopManager.instance.ShowNotification("Purchased: " + itemData.powerUpName, Color.green);
 
-            // Nupirkus prekę, būtinai paslepiame tooltipą, kad jis neliktų "kabėti"
             if (TooltipManager.instance != null) TooltipManager.instance.HideTooltip();
 
             gameObject.SetActive(false);
@@ -57,7 +56,6 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    // Suveikia, kai pelytė UŽVEDAMA ant prekės
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (itemData != null && TooltipManager.instance != null)
@@ -66,7 +64,6 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    // Suveikia, kai pelytė NUVEDAMA nuo prekės
     public void OnPointerExit(PointerEventData eventData)
     {
         if (TooltipManager.instance != null)
