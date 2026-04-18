@@ -1,22 +1,54 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
 public class RunUI : MonoBehaviour
 {
-	public TextMeshProUGUI roundText;
-	public TextMeshProUGUI gamesText;
+    public static RunUI instance { get; private set; }
 
-	public Image[] hearts;
+    public TextMeshProUGUI roundText;
+    public Image[] hearts;
 
-	void Update()
-	{
-		roundText.text = "Round: " + RunManager.instance.currentRound;
-		gamesText.text = "Games: " + RunManager.instance.gamesPlayed;
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
-		for (int i = 0; i < hearts.Length; i++)
-		{
-			hearts[i].enabled = i < RunManager.instance.playerLives;
-		}
-	}
+    void Start()
+    {
+        UpdateDisplay();
+    }
+
+    void Update()
+    {
+        if (GameManager.Instance.currentState != GameState.RoundOver)
+        {
+            UpdateDisplay();
+        }
+        UpdateHearts();
+    }
+
+    public void UpdateDisplay()
+    {
+        int handNum = RunManager.instance.handsSurvivedThisRound + 1;
+        int handReq = RunManager.instance.handsRequiredThisRound;
+        int round = RunManager.instance.currentRound;
+
+        roundText.text = $"Round {round} | Hand {handNum} / {handReq}";
+    }
+
+    private void UpdateHearts()
+    {
+        for (int i = 0; i < hearts.Length; i++)
+        {
+            hearts[i].enabled = i < RunManager.instance.playerLives;
+        }
+    }
 }

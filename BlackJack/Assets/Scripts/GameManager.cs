@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     public Button doubleButton;
     public Button splitButton;
     public Button dealButton;
+    public Button goToShopButton;
 
     [Header("Money UI")]
     public TextMeshProUGUI budgetText;
@@ -61,32 +62,25 @@ public class GameManager : MonoBehaviour
 
     private CardDisplay dealerHiddenCard;
 
-    // Dealer
     private int dealerScore;
     private int dealerAcesAsEleven;
 
-    // Pirma ranka
     private int playerScore;
     private int playerAcesAsEleven;
     private int playerCardCount;
 
-    // Antra ranka po split
     private int splitPlayerScore;
     private int splitPlayerAcesAsEleven;
     private int splitPlayerCardCount;
 
-    // Split būsena
     private bool hasSplit = false;
-    private int activeHandIndex = 0; // 0 = pirma ranka, 1 = antra ranka
+    private int activeHandIndex = 0;
 
-    // Double
     private bool doubleUsed;
 
-    // Statymai per rankas
     private int firstHandBet;
     private int secondHandBet;
 
-    // Pirmos dvi žaidėjo kortos split patikrai
     private CardDisplay firstPlayerCardDisplay;
     private CardDisplay secondPlayerCardDisplay;
     private int firstPlayerCardValue;
@@ -101,6 +95,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         if (resultText != null) resultText.gameObject.SetActive(false);
+
+        if (goToShopButton != null) goToShopButton.gameObject.SetActive(false);
 
         firstHandBet = 0;
         secondHandBet = 0;
@@ -157,7 +153,6 @@ public class GameManager : MonoBehaviour
                 HandleRoundOver();
                 break;
         }
-
     }
 
     public void OnDealButton()
@@ -174,15 +169,13 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-		
-		firstHandBet = currentBet;
+        firstHandBet = currentBet;
         secondHandBet = 0;
 
         UpdateMoneyUI();
 
         ChangeState(GameState.Dealing);
     }
-
 
     private IEnumerator HandleDealing()
     {
@@ -273,7 +266,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => done);
         onDone?.Invoke(cardValue, display);
     }
-
 
     private CardDisplay SpawnCard(Transform area, bool faceUp, out int cardValue, bool playSound = true)
     {
@@ -367,16 +359,16 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-		if (RunManager.instance.playerMoney < amount)
-		{
+        if (RunManager.instance.playerMoney < amount)
+        {
             Debug.Log("Nepakanka pinigų!");
             return;
         }
 
-		currentBet += amount;
-		RunManager.instance.playerMoney -= amount;
+        currentBet += amount;
+        RunManager.instance.playerMoney -= amount;
 
-		UpdateMoneyUI();
+        UpdateMoneyUI();
     }
 
     public void Hit()
@@ -478,14 +470,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-		if (RunManager.instance.playerMoney < firstHandBet)
-		{
+        if (RunManager.instance.playerMoney < firstHandBet)
+        {
             Debug.Log("Nepakanka biudžeto double statymui.");
             return;
         }
 
-		RunManager.instance.playerMoney -= firstHandBet;
-		firstHandBet *= 2;
+        RunManager.instance.playerMoney -= firstHandBet;
+        firstHandBet *= 2;
         doubleUsed = true;
         UpdateMoneyUI();
 
@@ -537,8 +529,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-		if (RunManager.instance.playerMoney < currentBet)
-		{
+        if (RunManager.instance.playerMoney < currentBet)
+        {
             Debug.Log("Nepakanka biudžeto split statymui.");
             return;
         }
@@ -546,8 +538,8 @@ public class GameManager : MonoBehaviour
         hasSplit = true;
         activeHandIndex = 0;
         secondHandBet = currentBet;
-		RunManager.instance.playerMoney -= secondHandBet;
-		UpdateMoneyUI();
+        RunManager.instance.playerMoney -= secondHandBet;
+        UpdateMoneyUI();
 
         if (secondPlayerCardDisplay != null)
             secondPlayerCardDisplay.transform.SetParent(playerSplitHandArea, false);
@@ -621,31 +613,31 @@ public class GameManager : MonoBehaviour
 
         if (!hasSplit)
         {
-			if (playerScore > 21)
-			{
-				result = "Player lost (Bust)";
-				RunManager.instance.playerLives--;
-			}
-			else if (dealerScore > 21)
+            if (playerScore > 21)
+            {
+                result = "Player lost (Bust)";
+                RunManager.instance.OnHandLost(firstHandBet);
+            }
+            else if (dealerScore > 21)
             {
                 result = "Player won!";
-				RunManager.instance.playerMoney += firstHandBet * 2;
-			}
+                RunManager.instance.OnHandWon(firstHandBet);
+            }
             else if (playerScore > dealerScore)
             {
                 result = "Player won!";
-				RunManager.instance.playerMoney += firstHandBet * 2;
-			}
-			else if (playerScore < dealerScore)
-			{
-				result = "Dealer won.";
-				RunManager.instance.playerLives--;
-			}
-			else
+                RunManager.instance.OnHandWon(firstHandBet);
+            }
+            else if (playerScore < dealerScore)
+            {
+                result = "Dealer won.";
+                RunManager.instance.OnHandLost(firstHandBet);
+            }
+            else
             {
                 result = "Push";
-				RunManager.instance.playerMoney += firstHandBet;
-			}
+                RunManager.instance.OnHandPush(firstHandBet);
+            }
         }
         else
         {
@@ -663,36 +655,22 @@ public class GameManager : MonoBehaviour
             resultText.gameObject.SetActive(true);
         }
 
-         if (RunManager.instance.playerMoney <= 0)
-			{
-            Debug.Log("Pinigai baigėsi! Žaidimas baigtas.");
-            StartCoroutine(GameOverSequence());
-        }
-        else
+        RunUI.instance.UpdateDisplay();
+
+        if (RunManager.instance.playerLives <= 0)
         {
-            Debug.Log("Pinigų dar yra. Laukiamas naujas raundas...");
+            Debug.Log("Game Over - no lives!");
+            SceneManager.LoadScene("End_screen");
+            return;
         }
 
-		currentBet = 0;
-		firstHandBet = 0;
-		secondHandBet = 0;
+        currentBet = 0;
+        firstHandBet = 0;
+        secondHandBet = 0;
 
-		UpdateMoneyUI();
+        UpdateMoneyUI();
 
-
-		if (RunManager.instance.playerLives <= 0)
-		{
-			Debug.Log("Game Over - no lives!");
-			SceneManager.LoadScene("End_screen");
-			return;
-		}
-
-
-		RunManager.instance.gamesPlayed++;
-		RunManager.instance.currentRound++;
-		StartCoroutine(NextRoundDelay());
-
-		if (endEffects != null)
+        if (endEffects != null)
         {
             if (result.Contains("Player won"))
                 endEffects.PlayWinEffect();
@@ -700,41 +678,67 @@ public class GameManager : MonoBehaviour
                 endEffects.PlayLoseEffect();
         }
 
-	
-	}
+        if (RunManager.instance.IsRoundComplete())
+        {
+            Debug.Log("Raundas baigtas. Rodomas mygtukas...");
+            ShowGoToShopButton();
+        }
+        else
+        {
+            Debug.Log($"Raunde dar {RunManager.instance.handsRequiredThisRound - RunManager.instance.handsSurvivedThisRound} handų");
+            StartCoroutine(NextHandDelay());
+        }
+    }
 
-	private IEnumerator NextRoundDelay()
-	{
-		yield return new WaitForSeconds(2f);
-		ChangeState(GameState.Betting);
-	}
+    private void ShowGoToShopButton()
+    {
+        if (goToShopButton != null)
+        {
+            goToShopButton.gameObject.SetActive(true);
+            goToShopButton.onClick.RemoveAllListeners();
+            goToShopButton.onClick.AddListener(GoToShop);
+        }
+    }
 
+    public void GoToShop()
+    {
+        Debug.Log("Einame į parduotuvę!");
+        SceneManager.LoadScene("Shop");
+    }
 
+    private IEnumerator NextHandDelay()
+    {
+        yield return new WaitForSeconds(2f);
+        if (goToShopButton != null) goToShopButton.gameObject.SetActive(false);
+        ChangeState(GameState.Betting);
+    }
 
-	private string ResolveSingleHand(int handScore, int handBet, string handName)
+    private string ResolveSingleHand(int handScore, int handBet, string handName)
     {
         if (handScore > 21)
         {
+            RunManager.instance.OnHandLost(handBet);
             return handName + ": Lost (Bust)";
         }
         else if (dealerScore > 21)
         {
-			RunManager.instance.playerMoney += handBet * 2;
-			return handName + ": Won";
+            RunManager.instance.OnHandWon(handBet);
+            return handName + ": Won";
         }
         else if (handScore > dealerScore)
         {
-			RunManager.instance.playerMoney += handBet * 2;
-			return handName + ": Won";
+            RunManager.instance.OnHandWon(handBet);
+            return handName + ": Won";
         }
         else if (handScore < dealerScore)
         {
+            RunManager.instance.OnHandLost(handBet);
             return handName + ": Lost";
         }
         else
         {
-			RunManager.instance.playerMoney += handBet;
-			return handName + ": Push";
+            RunManager.instance.OnHandPush(handBet);
+            return handName + ": Push";
         }
     }
 
@@ -756,7 +760,7 @@ public class GameManager : MonoBehaviour
                                       !hasSplit &&
                                       playerCardCount == 2 &&
                                       firstPlayerCardValue == secondPlayerCardValue &&
-                                      playerBudget >= currentBet;
+                                      RunManager.instance.playerMoney >= currentBet;
         if (dealButton != null)
             dealButton.interactable = currentState == GameState.Betting;
 
@@ -768,7 +772,6 @@ public class GameManager : MonoBehaviour
             chipCanvasGroup.interactable = isBetting;
             chipCanvasGroup.blocksRaycasts = isBetting;
         }
-
     }
 
     private void ClearHand(Transform area)
@@ -782,20 +785,14 @@ public class GameManager : MonoBehaviour
     private void UpdateMoneyUI()
     {
         if (budgetText != null)
-			budgetText.text = "$" + RunManager.instance.playerMoney;
+            budgetText.text = "$" + RunManager.instance.playerMoney;
 
-		if (currentBetText != null)
+        if (currentBetText != null)
         {
             int shownBet = firstHandBet + secondHandBet;
             if (shownBet <= 0) shownBet = currentBet;
             currentBetText.text = "$" + shownBet;
         }
-    }
-
-    private IEnumerator GameOverSequence()
-    {
-        yield return new WaitForSeconds(2f);
-        SceneManager.LoadScene("End_screen");
     }
 
     private void UpdateScoreUI()
