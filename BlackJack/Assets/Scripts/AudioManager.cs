@@ -6,8 +6,8 @@ using System.Collections;
 public class SoundClip
 {
     public string name;
-    public AudioClip introClip; // Pradinė dalis (gali būti null)
-    public AudioClip loopClip;  // Pagrindinė dalis, kuri kartosis
+    public AudioClip introClip;
+    public AudioClip loopClip;
     [Range(0f, 1f)] public float volume = 1f;
 }
 
@@ -64,8 +64,25 @@ public class AudioManager : MonoBehaviour
     private void CheckAndPlaySceneMusic()
     {
         string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == "Main_menu_scene") PlayMenuMusic();
-        else if (sceneName == "Backjack_table_scene") PlayGameplayMusic();
+        SoundClip targetMusic = null;
+
+        // PATIKRINK AR ŠIE PAVADINIMAI SUTAMPA SU TAVO SCENŲ PAVADINIMAIS UNITYJE
+        if (sceneName == "Main_menu_scene") targetMusic = mainMenuMusic;
+        else if (sceneName == "Backjack_table_scene") targetMusic = gameplayMusic;
+        else if (sceneName == "Shop") targetMusic = shopMusic; // Pridėta shop scena
+
+        if (targetMusic != null)
+        {
+            // Apsauga nuo muzikos persikrovimo perjungiant langus
+            if (musicSource.clip != null &&
+               (musicSource.clip == targetMusic.introClip || musicSource.clip == targetMusic.loopClip) &&
+               musicSource.isPlaying)
+            {
+                return;
+            }
+
+            SwitchMusic(targetMusic);
+        }
     }
 
     private void SetupSources()
@@ -74,42 +91,42 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
     }
 
-    public void PlayMenuMusic() { StartCoroutine(PlayMusicWithIntro(mainMenuMusic)); }
-    public void PlayGameplayMusic() { StartCoroutine(PlayMusicWithIntro(gameplayMusic)); }
-    public void PlayLoseMusic() { StartCoroutine(PlayMusicWithIntro(loseMusic)); }
-    public void PlayShopMusic() { StartCoroutine(PlayMusicWithIntro(shopMusic)); }
+    // ŠIS METODAS SUTVARKO TAVO KLAIDĄ CS0103
+    private void SwitchMusic(SoundClip s)
+    {
+        if (musicCoroutine != null) StopCoroutine(musicCoroutine);
+        musicCoroutine = StartCoroutine(PlayMusicWithIntro(s));
+    }
+
+    public void PlayMenuMusic() { SwitchMusic(mainMenuMusic); }
+    public void PlayGameplayMusic() { SwitchMusic(gameplayMusic); }
+    public void PlayLoseMusic() { SwitchMusic(loseMusic); }
+    public void PlayShopMusic() { SwitchMusic(shopMusic); }
 
     private IEnumerator PlayMusicWithIntro(SoundClip s)
     {
         if (s == null || (s.introClip == null && s.loopClip == null)) yield break;
 
-        // Jei ta pati muzika jau groja, nieko nedarom
-        if (musicSource.clip != null && (musicSource.clip == s.introClip || musicSource.clip == s.loopClip) && musicSource.isPlaying)
-            yield break;
-
         musicSource.Stop();
         musicSource.loop = false;
         musicSource.volume = s.volume * masterMusicVolume;
 
-        // 1. Grojam Intro (jei jis yra)
         if (s.introClip != null)
         {
             musicSource.clip = s.introClip;
             musicSource.Play();
-
-            // Laukiame, kol baigsis intro
             yield return new WaitWhile(() => musicSource.isPlaying);
         }
 
-        // 2. Grojam Loop
         if (s.loopClip != null)
         {
             musicSource.clip = s.loopClip;
-            musicSource.loop = true; // Čia įjungiam begalinį kartojimą
+            musicSource.loop = true;
             musicSource.Play();
         }
     }
 
+    // --- SFX ---
     public void PlayPlayerCardSound() { PlayRandom(playerCardSounds); }
     public void PlayDealerCardSound() { PlayRandom(dealerCardSounds); }
     public void PlayFlipSound() { PlayRandom(flipSounds); }
@@ -118,10 +135,8 @@ public class AudioManager : MonoBehaviour
     {
         if (sounds == null || sounds.Length == 0) return;
         SoundClip s = sounds[Random.Range(0, sounds.Length)];
-        if (s != null && s.loopClip != null) // Naudojame loopClip kaip pagrindinį SFX
-        {
-            sfxSource.PlayOneShot(s.loopClip, s.volume * masterSFXVolume);
-        }
+        AudioClip clipToPlay = s.loopClip != null ? s.loopClip : s.introClip;
+        if (clipToPlay != null) sfxSource.PlayOneShot(clipToPlay, s.volume * masterSFXVolume);
     }
 
     public void SetMasterMusicVolume(float volume)
@@ -131,7 +146,6 @@ public class AudioManager : MonoBehaviour
     }
 
     public void SetMasterSFXVolume(float volume) { masterSFXVolume = volume; }
-
     public void PauseMusic() { if (musicSource.isPlaying) musicSource.Pause(); }
     public void UnPauseMusic() { musicSource.UnPause(); }
 }
