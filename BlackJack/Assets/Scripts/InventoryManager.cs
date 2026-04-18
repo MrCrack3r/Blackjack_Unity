@@ -9,8 +9,7 @@ public class InventoryManager : MonoBehaviour
     [Header("Duomenų bazė")]
     public List<PowerUpData> allAvailablePowerUps;
 
-    [Header("Žaidėjo Inventorius")]
-    public List<PowerUpData> powerUps = new List<PowerUpData>();
+    public static List<PowerUpData> powerUps = new List<PowerUpData>();
     private int maxPowerUps = 4;
 
     [Header("UI Elementai ekrane")]
@@ -18,14 +17,12 @@ public class InventoryManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
+        instance = this;
     }
 
     void Start()
     {
+        // Jei sąrašas tuščias (pvz. po Restart), duodame naują kortą
         if (powerUps.Count == 0)
         {
             GiveRandomStartPowerUp();
@@ -41,6 +38,12 @@ public class InventoryManager : MonoBehaviour
             PowerUpData randomPowerUp = allAvailablePowerUps[randomIndex];
             AddPowerUp(randomPowerUp);
         }
+    }
+
+    // Šią funkciją kviesime iš Restart mygtuko kodo!
+    public static void ClearInventory()
+    {
+        powerUps.Clear();
     }
 
     public bool AddPowerUp(PowerUpData newPowerUp)

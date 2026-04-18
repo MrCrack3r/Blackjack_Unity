@@ -14,6 +14,7 @@ public class EndScreen : MonoBehaviour
         RunManager.instance.ResetRun();
         AudioManager.Instance.PlayMenuMusic();
         SceneManager.LoadScene("Main_menu_scene");
+        InventoryManager.ClearInventory();
     }
 
     public void DealAgain()
@@ -22,5 +23,6 @@ public class EndScreen : MonoBehaviour
         RunManager.instance.ResetRun();
         AudioManager.Instance.PlayGameplayMusic();
         SceneManager.LoadScene("Backjack_table_scene");
+        InventoryManager.ClearInventory();
     }
 }

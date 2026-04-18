@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class ShopManager : MonoBehaviour
@@ -9,6 +10,12 @@ public class ShopManager : MonoBehaviour
 
     [Header("UI Elementai")]
     public TextMeshProUGUI notificationText;
+
+    [Header("Visos Galimos Kortos Žaidime")]
+    public List<PowerUpData> allAvailablePowerUps; // Parduotuvė dabar turės savo sąrašą
+
+    [Header("Parduotuvės Prekės (3 Slotai)")]
+    public ShopItem[] shopSlots;
 
     void Awake()
     {
@@ -23,43 +30,29 @@ public class ShopManager : MonoBehaviour
         }
 
         if (notificationText != null) notificationText.gameObject.SetActive(false);
+
+        GenerateRandomShop();
     }
 
-    // ==========================================
-    // PIRKIMO FUNKCIJA
-    // ==========================================
-    public void TryBuyPowerUp(PowerUpData data)
+    private void GenerateRandomShop()
     {
-        if (data == null) return;
+        // Tikriname ar įdėjai kortas į ShopManager
+        if (allAvailablePowerUps == null || allAvailablePowerUps.Count == 0) return;
 
-        // 1. Patikriname ar žaidėjas turi pakankamai pinigų
-        if (RunManager.instance != null && RunManager.instance.playerMoney >= data.baseCost)
+        List<PowerUpData> availableCards = new List<PowerUpData>(allAvailablePowerUps);
+
+        for (int i = 0; i < shopSlots.Length; i++)
         {
-            // 2. Bandome pridėti į inventorių
-            if (InventoryManager.instance != null)
-            {
-                bool success = InventoryManager.instance.AddPowerUp(data);
+            if (shopSlots[i] == null) continue;
+            if (availableCards.Count == 0) break;
 
-                if (success)
-                {
-                    // Atimame pinigus
-                    RunManager.instance.playerMoney -= data.baseCost;
+            int randomIndex = Random.Range(0, availableCards.Count);
+            PowerUpData randomCard = availableCards[randomIndex];
 
-                    // Parodome sėkmės pranešimą
-                    ShowNotification("Purchased: " + data.powerUpName, Color.green);
-                    Debug.Log("Bought powerup: " + data.powerUpName);
-                }
-                else
-                {
-                    // Inventorius pilnas (jau turi 4 kortas)
-                    ShowNotification("Inventory Full!", Color.red);
-                }
-            }
-        }
-        else
-        {
-            // Nepakanka pinigų
-            ShowNotification("Not enough money!", Color.red);
+            availableCards.RemoveAt(randomIndex);
+
+            shopSlots[i].Setup(randomCard);
+            shopSlots[i].gameObject.SetActive(true);
         }
     }
 
@@ -77,21 +70,18 @@ public class ShopManager : MonoBehaviour
         notificationText.text = message;
         notificationText.color = color;
         notificationText.gameObject.SetActive(true);
-
         yield return new WaitForSeconds(2f);
-
         notificationText.gameObject.SetActive(false);
     }
 
     public void ContinueToNextRound()
     {
-        Debug.Log("Parduotuvė uždaroma. Pradedamas kitas raundas!");
-
         if (RunManager.instance != null)
         {
             RunManager.instance.NextRound();
         }
 
+        // PATAISYTA: Dabar tiksliai atitinka tavo scenos pavadinimą (Backjack)
         SceneManager.LoadScene("Backjack_table_scene");
     }
 }

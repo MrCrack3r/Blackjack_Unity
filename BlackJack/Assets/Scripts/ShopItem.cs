@@ -1,28 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems; // Būtina pelytės fiksavimui!
 
-public class ShopItem : MonoBehaviour
+public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Prekės Nustatymai")]
-    public PowerUpData itemData; // Jūsų sukurtas ScriptableObject
+    public PowerUpData itemData;
 
     [Header("Prekės UI")]
     public TextMeshProUGUI nameText;
-    public TextMeshProUGUI descText;
     public TextMeshProUGUI priceText;
     public Image iconImage;
 
-    void Start()
+    // PASTABA: descText pašalintas, nes dabar naudosime Tooltip!
+
+    public void Setup(PowerUpData newData)
     {
-        // Užpildome UI pagal priskirtą PowerUpData failą
+        itemData = newData;
+
         if (itemData != null)
         {
             if (nameText != null) nameText.text = itemData.powerUpName;
-            if (descText != null) descText.text = itemData.description;
             if (priceText != null) priceText.text = "$" + itemData.baseCost;
-
-            // PATAISYMAS 1: Naudojame tavo kintamąjį "icon" (vietoj powerUpIcon)
             if (iconImage != null) iconImage.sprite = itemData.icon;
         }
     }
@@ -31,44 +31,47 @@ public class ShopItem : MonoBehaviour
     {
         if (itemData == null) return;
 
-        // 1. Patikriname pinigus
         if (RunManager.instance.playerMoney < itemData.baseCost)
         {
-            Debug.Log("Nepakanka pinigų!");
-            if (ShopManager.instance != null)
-                ShopManager.instance.ShowNotification("Nepakanka pinigų!", Color.red);
+            if (ShopManager.instance != null) ShopManager.instance.ShowNotification("Not enough money!", Color.red);
             return;
         }
 
-        // 2. Patikriname inventorių
-        if (InventoryManager.instance != null)
+        if (InventoryManager.powerUps.Count < 4)
         {
-            bool success = InventoryManager.instance.AddPowerUp(itemData);
+            InventoryManager.powerUps.Add(itemData);
+            RunManager.instance.playerMoney -= itemData.baseCost;
 
-            if (success)
-            {
-                // 3. Nuskaičiuojame pinigus
-                RunManager.instance.playerMoney -= itemData.baseCost;
+            if (ShopManager.instance != null)
+                ShopManager.instance.ShowNotification("Purchased: " + itemData.powerUpName, Color.green);
 
-                // PATAISYMAS 2: Ištryniau RunManager.instance.UpdateUI(), nes tokios funkcijos ten nebėra.
-                // (Jei turi MoneyUI skriptą, pinigų atnaujinimą ekrane turėsi padaryti ten)
+            // Nupirkus prekę, būtinai paslepiame tooltipą, kad jis neliktų "kabėti"
+            if (TooltipManager.instance != null) TooltipManager.instance.HideTooltip();
 
-                if (ShopManager.instance != null)
-                    ShopManager.instance.ShowNotification("Sėkmingai nupirkta!", Color.green);
-
-                // 4. Paslepiame šią prekę, nes ji jau nupirkta
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.Log("Inventorius pilnas!");
-                if (ShopManager.instance != null)
-                    ShopManager.instance.ShowNotification("Inventorius pilnas!", Color.yellow);
-            }
+            gameObject.SetActive(false);
         }
         else
         {
-            Debug.LogError("Nerastas InventoryManager!");
+            if (ShopManager.instance != null)
+                ShopManager.instance.ShowNotification("Inventory Full!", Color.yellow);
+        }
+    }
+
+    // Suveikia, kai pelytė UŽVEDAMA ant prekės
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (itemData != null && TooltipManager.instance != null)
+        {
+            TooltipManager.instance.ShowTooltip(itemData.description);
+        }
+    }
+
+    // Suveikia, kai pelytė NUVEDAMA nuo prekės
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (TooltipManager.instance != null)
+        {
+            TooltipManager.instance.HideTooltip();
         }
     }
 }

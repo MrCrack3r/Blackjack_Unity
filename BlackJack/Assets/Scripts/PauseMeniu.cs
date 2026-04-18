@@ -75,8 +75,16 @@ public class PauseMeniu : MonoBehaviour
         if (AudioManager.Instance != null) AudioManager.Instance.UnPauseMusic();
     }
 
-    public void RestartGame() { Time.timeScale = 1f; SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
-    public void LoadMainMenu() { Time.timeScale = 1f; SceneManager.LoadScene("Main_menu_scene"); }
+    public void RestartGame() { 
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        InventoryManager.ClearInventory();
+    }
+    public void LoadMainMenu() { 
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene("Main_menu_scene");
+        InventoryManager.ClearInventory();
+    }
 
     // --- MUZIKOS VALDYMAS ---
     public void SetMusicVolume(float volume)
