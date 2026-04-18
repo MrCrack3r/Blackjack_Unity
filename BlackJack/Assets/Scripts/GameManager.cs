@@ -647,15 +647,12 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log(result);
-        UpdateMoneyUI();
 
         if (resultText != null)
         {
             resultText.text = result;
             resultText.gameObject.SetActive(true);
         }
-
-        RunUI.instance.UpdateDisplay();
 
         if (RunManager.instance.playerLives <= 0)
         {
@@ -678,7 +675,11 @@ public class GameManager : MonoBehaviour
                 endEffects.PlayLoseEffect();
         }
 
-        if (RunManager.instance.IsRoundComplete())
+        bool isRoundComplete = RunManager.instance.IsRoundComplete();
+
+        RunUI.instance.UpdateDisplay();
+
+        if (isRoundComplete)
         {
             Debug.Log("Raundas baigtas. Rodomas mygtukas...");
             ShowGoToShopButton();
