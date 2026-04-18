@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62015eb2642ecd5469eb4b34ee63e8c8, type: 3}
+  m_Name: revolver
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
+  id: 6
+  powerUpName: Revolver
+  description: 'Shoot the Dealer: Instantly win this hand by taking the dealer out
+    of the game.'
+  icon: {fileID: 1092281059654073203, guid: d3a894f3cdb102e459644d794074869e, type: 3}
+  baseCost: 200
+  effectType: 0

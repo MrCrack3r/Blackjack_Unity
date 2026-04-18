@@ -11,13 +11,5 @@ public class PowerUpData : ScriptableObject
 
 	public int baseCost;
 
-	public PowerUpType effectType;
 }
 
-public enum PowerUpType
-{
-	ExtraLife,
-	DoubleMoney,
-	Heal,
-	BonusCard
-}

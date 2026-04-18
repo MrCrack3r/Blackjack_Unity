@@ -1,22 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // BŪTINA prirašyti, kad veiktų Image komponentai ekrane
+using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
     [Header("Duomenų bazė")]
-    // Čia per Unity įmesite VISAS žaidime egzistuojančias galias
     public List<PowerUpData> allAvailablePowerUps;
 
     [Header("Žaidėjo Inventorius")]
-    // Tai yra jūsų sąrašas, kuriame laikomos DABAR turimos galios
     public List<PowerUpData> powerUps = new List<PowerUpData>();
-    private int maxPowerUps = 5;
+    private int maxPowerUps = 4;
 
     [Header("UI Elementai ekrane")]
-    // Čia per Unity įmesite tuščius "Image" objektus iš savo Canvas
     public Image[] inventorySlots;
 
     void Awake()
@@ -27,53 +24,51 @@ public class InventoryManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    // ==========================================
-    // TAVO ORIGINALŪS METODAI (su UI atnaujinimu)
-    // ==========================================
+    void Start()
+    {
+        if (powerUps.Count == 0)
+        {
+            GiveRandomStartPowerUp();
+        }
+        UpdateInventoryUI();
+    }
+
+    public void GiveRandomStartPowerUp()
+    {
+        if (allAvailablePowerUps != null && allAvailablePowerUps.Count > 0)
+        {
+            int randomIndex = Random.Range(0, allAvailablePowerUps.Count);
+            PowerUpData randomPowerUp = allAvailablePowerUps[randomIndex];
+            AddPowerUp(randomPowerUp);
+        }
+    }
 
     public bool AddPowerUp(PowerUpData newPowerUp)
     {
-        if (powerUps.Count >= maxPowerUps)
-        {
-            Debug.Log("Inventory full!");
-            return false;
-        }
-
+        if (powerUps.Count >= maxPowerUps) return false;
         powerUps.Add(newPowerUp);
-        UpdateInventoryUI(); // Pridėjau UI atnaujinimą
+        UpdateInventoryUI();
         return true;
     }
 
-    public void RemovePowerUp(PowerUpData powerUp)
-    {
-        powerUps.Remove(powerUp);
-        UpdateInventoryUI(); // Pridėjau UI atnaujinimą
-    }
-
-
-    // ==========================================
-    // UI ATNAUJINIMO METODAS
-    // ==========================================
-
     public void UpdateInventoryUI()
     {
-        // Apsauga, jei nesukūrėte jokių UI laukelių
-        if (inventorySlots == null || inventorySlots.Length == 0) return;
+        if (inventorySlots == null) return;
 
         for (int i = 0; i < inventorySlots.Length; i++)
         {
-            // PAKEISTA IŠ playerInventory Į powerUps
-            if (i < powerUps.Count)
+            if (inventorySlots[i] == null) continue;
+
+            if (i < powerUps.Count && powerUps[i] != null && powerUps[i].icon != null)
             {
-                // Parodome ikoną
-                inventorySlots[i].sprite = powerUps[i].icon; // PASTABA: Patikrink, ar tavo PowerUpData.cs turi kintamąjį 'icon'. Jei jis vadinasi 'powerUpIcon', pakeisk čia!
+                inventorySlots[i].sprite = powerUps[i].icon;
+                inventorySlots[i].gameObject.SetActive(true);
                 inventorySlots[i].enabled = true;
+                inventorySlots[i].color = Color.white;
             }
             else
             {
-                // Paslepiame ikoną, jei laukelis tuščias
-                inventorySlots[i].sprite = null;
-                inventorySlots[i].enabled = false;
+                inventorySlots[i].gameObject.SetActive(false);
             }
         }
     }

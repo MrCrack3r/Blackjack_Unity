@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62015eb2642ecd5469eb4b34ee63e8c8, type: 3}
+  m_Name: dice
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
+  id: 2
+  powerUpName: Dice
+  description: 'Roll the Dice: Randomly grants you +1 life, a 2x payout, or +$200. '
+  icon: {fileID: 3463294728815929477, guid: bed5cf1d690e2ae499a4010035877fc5, type: 3}
+  baseCost: 200
+  effectType: 0
