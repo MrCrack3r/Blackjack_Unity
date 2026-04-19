@@ -85,6 +85,9 @@ public class GameManager : MonoBehaviour
     private CardDisplay secondPlayerCardDisplay;
     private int firstPlayerCardValue;
     private int secondPlayerCardValue;
+    private bool forceWin = false;
+    private bool forceSkip = false;
+    private bool handshakeActive = false;
 
     private void Awake()
     {
@@ -303,7 +306,7 @@ public class GameManager : MonoBehaviour
         return display;
     }
 
-    private void AddCardToHand(int handIndex, int value)
+    public void AddCardToHand(int handIndex, int value)
     {
         if (handIndex == 0)
         {
@@ -607,31 +610,124 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.RoundOver);
     }
 
+    private void FinishRound(string result)
+    {
+        Debug.Log(result);
+
+        if (resultText != null)
+        {
+            resultText.text = result;
+            resultText.gameObject.SetActive(true);
+        }
+
+        if (RunManager.instance.playerLives <= 0)
+        {
+            SceneManager.LoadScene("End_screen");
+            return;
+        }
+
+        currentBet = 0;
+        firstHandBet = 0;
+        secondHandBet = 0;
+
+        UpdateMoneyUI();
+
+        bool isRoundComplete = RunManager.instance.IsRoundComplete();
+
+        RunUI.instance.UpdateDisplay();
+
+        if (isRoundComplete)
+            ShowGoToShopButton();
+        else
+            StartCoroutine(NextHandDelay());
+    }
+
     private void HandleRoundOver()
     {
         string result = "";
+
+        if (forceWin)
+        {
+            result = "Player won! (Revolver)";
+            RunManager.instance.OnHandWon(firstHandBet);
+
+            forceWin = false;
+            forceSkip = false;
+
+            FinishRound(result);
+            return;
+        }
+
+        if (forceSkip)
+        {
+            result = "Hand skipped";
+
+            RunManager.instance.OnHandPush(firstHandBet);
+
+            forceWin = false;
+            forceSkip = false;
+
+            FinishRound(result);
+            return;
+        }
 
         if (!hasSplit)
         {
             if (playerScore > 21)
             {
                 result = "Player lost (Bust)";
-                RunManager.instance.OnHandLost(firstHandBet);
+                if (shieldActive)
+                {
+                    Debug.Log("Shield apsaugojo nuo pralaimėjimo!");
+                    shieldActive = false;
+                }
+                else
+                {
+                    RunManager.instance.OnHandLost(firstHandBet);
+                }
             }
             else if (dealerScore > 21)
             {
-                result = "Player won!";
-                RunManager.instance.OnHandWon(firstHandBet);
+                if (handshakeActive && playerScore == 21)
+                {
+                    result = "Player won! (Handshake x3)";
+                    RunManager.instance.playerMoney += firstHandBet * 3;
+                }
+                else
+                {
+                    result = "Player won!";
+                    RunManager.instance.OnHandWon(firstHandBet);
+                }
+
+                handshakeActive = false;
             }
             else if (playerScore > dealerScore)
             {
-                result = "Player won!";
-                RunManager.instance.OnHandWon(firstHandBet);
+                if (handshakeActive && playerScore == 21)
+                {
+                    result = "Player won! (Handshake x3)";
+                    RunManager.instance.playerMoney += firstHandBet * 3;
+                }
+                else
+                {
+                    result = "Player won!";
+                    RunManager.instance.OnHandWon(firstHandBet);
+                }
+
+                handshakeActive = false;
             }
             else if (playerScore < dealerScore)
             {
                 result = "Dealer won.";
-                RunManager.instance.OnHandLost(firstHandBet);
+                if (shieldActive)
+                {
+                    Debug.Log("Shield apsaugojo nuo pralaimėjimo!");
+                    shieldActive = false;
+                }
+                else
+                {
+                    RunManager.instance.OnHandLost(firstHandBet);
+                }
             }
             else
             {
@@ -689,6 +785,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Raunde dar {RunManager.instance.handsRequiredThisRound - RunManager.instance.handsSurvivedThisRound} handų");
             StartCoroutine(NextHandDelay());
         }
+        handshakeActive = false;
     }
 
     private void ShowGoToShopButton()
@@ -758,10 +855,11 @@ public class GameManager : MonoBehaviour
 
         if (splitButton != null)
             splitButton.interactable = playerTurn &&
-                                      !hasSplit &&
-                                      playerCardCount == 2 &&
-                                      firstPlayerCardValue == secondPlayerCardValue &&
-                                      RunManager.instance.playerMoney >= currentBet;
+                          !hasSplit &&
+                          !handshakeActive && 
+                          playerCardCount == 2 &&
+                          firstPlayerCardValue == secondPlayerCardValue &&
+                          RunManager.instance.playerMoney >= currentBet;
         if (dealButton != null)
             dealButton.interactable = currentState == GameState.Betting;
 
@@ -819,4 +917,43 @@ public class GameManager : MonoBehaviour
                 dealerScoreText.text = "Points: " + dealerScore.ToString();
         }
     }
+
+    public void ActivateHandshake()
+    {
+        if (hasSplit)
+        {
+            Debug.Log("Handshake negalima naudoti po split!");
+            return;
+        }
+
+        handshakeActive = true;
+
+        Debug.Log("Handshake aktyvuotas");
+    }
+
+    public int GetActiveHand()
+    {
+        return activeHandIndex;
+    }
+
+    public void ForceWin()
+    {
+        Debug.Log("Force win!");
+
+        forceWin = true;
+        ChangeState(GameState.RoundOver);
+    }
+
+    public void ForceSkip()
+    {
+        forceSkip = true;
+        ChangeState(GameState.RoundOver);
+    }
+
+
+    // ===== POWERUP FLAGS =====
+    public bool doubleRewardActive = false;
+    public bool shieldActive = false;
+    public bool premiumInsuranceActive = false;
+    public bool skipHandActive = false;
 }
