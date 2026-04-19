@@ -39,11 +39,14 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (InventoryManager.powerUps.Count < 4)
         {
-            InventoryManager.powerUps.Add(itemData);
+            InventoryManager.powerUps.Add(itemData); 
             RunManager.instance.playerMoney -= itemData.baseCost;
 
             if (ShopManager.instance != null)
                 ShopManager.instance.ShowNotification("Purchased: " + itemData.powerUpName, Color.green);
+
+            if (InventoryManager.instance != null)
+                InventoryManager.instance.UpdateInventoryUI();
 
             if (TooltipManager.instance != null) TooltipManager.instance.HideTooltip();
 

@@ -912,7 +912,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 758109709}
+      - m_Target: {fileID: 499075771}
         m_TargetAssemblyTypeName: InventorySlotUI, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -1381,7 +1381,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 758109709}
+      - m_Target: {fileID: 798395132}
         m_TargetAssemblyTypeName: InventorySlotUI, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -3056,7 +3056,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 758109709}
+      - m_Target: {fileID: 1239816346}
         m_TargetAssemblyTypeName: InventorySlotUI, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -3718,7 +3718,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 758109709}
+      - m_Target: {fileID: 1546039378}
         m_TargetAssemblyTypeName: InventorySlotUI, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -4518,10 +4518,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5c83ca680ec64444f9b5a61840ceaf64, type: 2}
   - {fileID: 11400000, guid: f1b235ab513c57844bf00a2cfcd776d7, type: 2}
   inventorySlots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 798395134}
+  - {fileID: 499075773}
+  - {fileID: 1239816348}
+  - {fileID: 1546039380}
 --- !u!4 &2114281073
 Transform:
   m_ObjectHideFlags: 0

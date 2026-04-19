@@ -10,6 +10,7 @@ public class InventoryManager : MonoBehaviour
     public List<PowerUpData> allAvailablePowerUps;
 
     public static List<PowerUpData> powerUps = new List<PowerUpData>();
+    public static bool hasReceivedStartCard = false;
     private int maxPowerUps = 4;
 
     [Header("UI Elementai ekrane")]
@@ -22,12 +23,18 @@ public class InventoryManager : MonoBehaviour
 
     void Start()
     {
-        // Jei sąrašas tuščias (pvz. po Restart), duodame naują kortą
-        if (powerUps.Count == 0)
+        if (!hasReceivedStartCard && powerUps.Count == 0)
         {
+            hasReceivedStartCard = true;
             GiveRandomStartPowerUp();
         }
         UpdateInventoryUI();
+    }
+
+    public static void ClearInventory()
+    {
+        powerUps.Clear();
+        hasReceivedStartCard = false;
     }
 
     public void GiveRandomStartPowerUp()
@@ -40,18 +47,21 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    // Šią funkciją kviesime iš Restart mygtuko kodo!
-    public static void ClearInventory()
-    {
-        powerUps.Clear();
-    }
-
     public bool AddPowerUp(PowerUpData newPowerUp)
     {
         if (powerUps.Count >= maxPowerUps) return false;
         powerUps.Add(newPowerUp);
         UpdateInventoryUI();
         return true;
+    }
+
+    public void RemovePowerUpAt(int index)
+    {
+        if (index >= 0 && index < powerUps.Count)
+        {
+            powerUps.RemoveAt(index);
+            UpdateInventoryUI();
+        }
     }
 
     public void UpdateInventoryUI()

@@ -7,7 +7,6 @@ public class InventorySlotUI : MonoBehaviour
 
     public void OnClick()
     {
-        // Tik shop'e leidþiam iðmesti
         if (ShopManager.instance == null)
         {
             Debug.Log("Kortas galima mesti tik shop'e!");
@@ -17,7 +16,9 @@ public class InventorySlotUI : MonoBehaviour
         if (slotIndex >= InventoryManager.powerUps.Count)
             return;
 
-        Debug.Log("Iðmesta korta: " + InventoryManager.powerUps[slotIndex].powerUpName);
+        Debug.Log("Išmesta korta: " + InventoryManager.powerUps[slotIndex].powerUpName);
+
+        ShopManager.instance.ShowNotification("Išmesta: " + InventoryManager.powerUps[slotIndex].powerUpName, Color.yellow);
 
         InventoryManager.powerUps.RemoveAt(slotIndex);
         InventoryManager.instance.UpdateInventoryUI();
