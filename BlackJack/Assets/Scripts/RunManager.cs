@@ -100,7 +100,8 @@ public class RunManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("GAME OVER! Pasiektas: Round " + currentRound);
-        SceneManager.LoadScene("End_screen");
+		PlayerPrefs.DeleteAll();
+		SceneManager.LoadScene("End_screen");
     }
 
 	public void SaveGame()
@@ -117,5 +118,14 @@ public class RunManager : MonoBehaviour
 		Debug.Log("Game saved!");
 	}
 
+	public void LoadGame()
+	{
+		playerMoney = PlayerPrefs.GetInt("Money", 200);
+		playerLives = PlayerPrefs.GetInt("Lives", 3);
+		currentRound = PlayerPrefs.GetInt("Round", 1);
+		gamesPlayed = PlayerPrefs.GetInt("Games", 0);
+
+		Debug.Log("Game loaded!");
+	}
 
 }
