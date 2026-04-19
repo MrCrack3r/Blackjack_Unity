@@ -10,8 +10,9 @@ public class RunManager : MonoBehaviour
     public int handsSurvivedThisRound = 0;
     public int playerLives = 3;
     public int playerMoney = 200;
+	public int gamesPlayed = 0;
 
-    void Awake()
+	void Awake()
     {
         if (instance == null)
         {
@@ -35,7 +36,12 @@ public class RunManager : MonoBehaviour
         handsSurvivedThisRound = 0; 
     }
 
-    public void OnHandWon(int betAmount)
+	void OnApplicationQuit()
+	{
+		SaveGame();
+	}
+
+	public void OnHandWon(int betAmount)
     {
         playerMoney += betAmount * 2;
         handsSurvivedThisRound++;
@@ -96,4 +102,20 @@ public class RunManager : MonoBehaviour
         Debug.Log("GAME OVER! Pasiektas: Round " + currentRound);
         SceneManager.LoadScene("End_screen");
     }
+
+	public void SaveGame()
+	{
+		PlayerPrefs.SetInt("Money", playerMoney);
+		PlayerPrefs.SetInt("Lives", playerLives);
+		PlayerPrefs.SetInt("Round", currentRound);
+		PlayerPrefs.SetInt("Games", gamesPlayed);
+
+		PlayerPrefs.SetInt("PowerUpCount", InventoryManager.powerUps.Count);
+
+		PlayerPrefs.Save();
+
+		Debug.Log("Game saved!");
+	}
+
+
 }
