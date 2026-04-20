@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems; // Būtina pelytės fiksavimui!
+using UnityEngine.EventSystems;
 
 public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -13,7 +13,6 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public TextMeshProUGUI priceText;
     public Image iconImage;
 
-    // PASTABA: descText pašalintas, nes dabar naudosime Tooltip!
 
     public void Setup(PowerUpData newData)
     {
@@ -41,6 +40,8 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             InventoryManager.powerUps.Add(itemData); 
             RunManager.instance.playerMoney -= itemData.baseCost;
+
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayCoinSound();
 
             if (ShopManager.instance != null)
                 ShopManager.instance.ShowNotification("Purchased: " + itemData.powerUpName, Color.green);

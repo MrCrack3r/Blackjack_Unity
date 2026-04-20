@@ -103,5 +103,8 @@ MonoBehaviour:
     introClip: {fileID: 8300000, guid: ca8083275685ea94eb92f10eff61bdbe, type: 3}
     loopClip: {fileID: 8300000, guid: f59504347e42f0f478ae8051cc64fcb3, type: 3}
     volume: 0.802
+  clickSound: {fileID: 8300000, guid: 3d48c71a0ae6c4244bae47a455a88afe, type: 3}
+  coinSound: {fileID: 8300000, guid: abca66ce42006e24fa3290770e13dcf2, type: 3}
+  damageSound: {fileID: 8300000, guid: d4aaa27326a9cff47b150000fbfbd402, type: 3}
   masterMusicVolume: 0.5
   masterSFXVolume: 0.7

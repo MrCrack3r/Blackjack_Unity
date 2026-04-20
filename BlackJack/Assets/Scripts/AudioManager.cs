@@ -26,11 +26,17 @@ public class AudioManager : MonoBehaviour
     public SoundClip loseMusic;
     public SoundClip shopMusic;
 
+    [Header("Garso Efektai (SFX)")]
+    public AudioClip clickSound;
+    public AudioClip coinSound;
+    public AudioClip damageSound;
+    public AudioClip actionButton;
+
     [Header("Bendra kontrolė")]
     [Range(0f, 1f)] public float masterMusicVolume = 0.5f;
     [Range(0f, 1f)] public float masterSFXVolume = 0.7f;
 
-    private AudioSource sfxSource;
+    private AudioSource sfxSource; 
     private AudioSource musicSource;
     private Coroutine musicCoroutine;
 
@@ -66,14 +72,12 @@ public class AudioManager : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         SoundClip targetMusic = null;
 
-        // PATIKRINK AR ŠIE PAVADINIMAI SUTAMPA SU TAVO SCENŲ PAVADINIMAIS UNITYJE
         if (sceneName == "Main_menu_scene") targetMusic = mainMenuMusic;
         else if (sceneName == "Backjack_table_scene") targetMusic = gameplayMusic;
-        else if (sceneName == "Shop") targetMusic = shopMusic; // Pridėta shop scena
+        else if (sceneName == "Shop") targetMusic = shopMusic;
 
         if (targetMusic != null)
         {
-            // Apsauga nuo muzikos persikrovimo perjungiant langus
             if (musicSource.clip != null &&
                (musicSource.clip == targetMusic.introClip || musicSource.clip == targetMusic.loopClip) &&
                musicSource.isPlaying)
@@ -91,7 +95,6 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
     }
 
-    // ŠIS METODAS SUTVARKO TAVO KLAIDĄ CS0103
     private void SwitchMusic(SoundClip s)
     {
         if (musicCoroutine != null) StopCoroutine(musicCoroutine);
@@ -148,4 +151,36 @@ public class AudioManager : MonoBehaviour
     public void SetMasterSFXVolume(float volume) { masterSFXVolume = volume; }
     public void PauseMusic() { if (musicSource.isPlaying) musicSource.Pause(); }
     public void UnPauseMusic() { musicSource.UnPause(); }
+
+    public void PlayClickSound()
+    {
+        if (sfxSource != null && clickSound != null)
+        {
+            sfxSource.PlayOneShot(clickSound, masterSFXVolume);
+        }
+    }
+
+    public void PlayCoinSound()
+    {
+        if (sfxSource != null && coinSound != null)
+        {
+            sfxSource.PlayOneShot(coinSound, masterSFXVolume);
+        }
+    }
+
+    public void PlayDamageSound()
+    {
+        if (sfxSource != null && damageSound != null)
+        {
+            sfxSource.PlayOneShot(damageSound, masterSFXVolume);
+        }
+    }
+
+    public void PlayButtonSound()
+    {
+        if (sfxSource != null && actionButton != null)
+        {
+            sfxSource.PlayOneShot(actionButton, masterSFXVolume);
+        }
+    }
 }

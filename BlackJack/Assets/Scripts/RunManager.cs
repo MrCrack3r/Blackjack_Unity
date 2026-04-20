@@ -10,9 +10,9 @@ public class RunManager : MonoBehaviour
     public int handsSurvivedThisRound = 0;
     public int playerLives = 3;
     public int playerMoney = 200;
-	public int gamesPlayed = 0;
+    public int gamesPlayed = 0;
 
-	void Awake()
+    void Awake()
     {
         if (instance == null)
         {
@@ -33,15 +33,15 @@ public class RunManager : MonoBehaviour
     public void SetupRound()
     {
         handsRequiredThisRound = 2 + currentRound;
-        handsSurvivedThisRound = 0; 
+        handsSurvivedThisRound = 0;
     }
 
-	void OnApplicationQuit()
-	{
-		SaveGame();
-	}
+    void OnApplicationQuit()
+    {
+        SaveGame();
+    }
 
-	public void OnHandWon(int betAmount)
+    public void OnHandWon(int betAmount)
     {
         playerMoney += betAmount * 2;
         handsSurvivedThisRound++;
@@ -57,6 +57,12 @@ public class RunManager : MonoBehaviour
     {
         handsSurvivedThisRound++;
         playerLives--;
+
+        // PRIDĖTA: Paleidžiame žalos garsą, kai prarandame gyvybę!
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayDamageSound();
+        }
 
         if (playerLives <= 0)
         {
@@ -79,7 +85,7 @@ public class RunManager : MonoBehaviour
     public void NextRound()
     {
         currentRound++;
-        SetupRound();  
+        SetupRound();
     }
 
     public void ResetRun()
@@ -100,32 +106,31 @@ public class RunManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("GAME OVER! Pasiektas: Round " + currentRound);
-		PlayerPrefs.DeleteAll();
-		SceneManager.LoadScene("End_screen");
+        PlayerPrefs.DeleteAll();
+        SceneManager.LoadScene("End_screen");
     }
 
-	public void SaveGame()
-	{
-		PlayerPrefs.SetInt("Money", playerMoney);
-		PlayerPrefs.SetInt("Lives", playerLives);
-		PlayerPrefs.SetInt("Round", currentRound);
-		PlayerPrefs.SetInt("Games", gamesPlayed);
+    public void SaveGame()
+    {
+        PlayerPrefs.SetInt("Money", playerMoney);
+        PlayerPrefs.SetInt("Lives", playerLives);
+        PlayerPrefs.SetInt("Round", currentRound);
+        PlayerPrefs.SetInt("Games", gamesPlayed);
 
-		PlayerPrefs.SetInt("PowerUpCount", InventoryManager.powerUps.Count);
+        PlayerPrefs.SetInt("PowerUpCount", InventoryManager.powerUps.Count);
 
-		PlayerPrefs.Save();
+        PlayerPrefs.Save();
 
-		Debug.Log("Game saved!");
-	}
+        Debug.Log("Game saved!");
+    }
 
-	public void LoadGame()
-	{
-		playerMoney = PlayerPrefs.GetInt("Money", 200);
-		playerLives = PlayerPrefs.GetInt("Lives", 3);
-		currentRound = PlayerPrefs.GetInt("Round", 1);
-		gamesPlayed = PlayerPrefs.GetInt("Games", 0);
+    public void LoadGame()
+    {
+        playerMoney = PlayerPrefs.GetInt("Money", 200);
+        playerLives = PlayerPrefs.GetInt("Lives", 3);
+        currentRound = PlayerPrefs.GetInt("Round", 1);
+        gamesPlayed = PlayerPrefs.GetInt("Games", 0);
 
-		Debug.Log("Game loaded!");
-	}
-
+        Debug.Log("Game loaded!");
+    }
 }
