@@ -58,7 +58,6 @@ public class RunManager : MonoBehaviour
         handsSurvivedThisRound++;
         playerLives--;
 
-        // PRIDĖTA: Paleidžiame žalos garsą, kai prarandame gyvybę!
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayDamageSound();

@@ -10,7 +10,6 @@ public class MainMenuManager : MonoBehaviour
 	{
 		
 
-		// Muzika
 		if (AudioManager.Instance != null)
 		{
 			AudioManager.Instance.PlayMenuMusic();

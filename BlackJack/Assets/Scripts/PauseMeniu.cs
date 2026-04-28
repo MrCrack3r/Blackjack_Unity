@@ -11,14 +11,13 @@ public class PauseMeniu : MonoBehaviour
     public Slider sfxSlider;
 
     [Header("Garso Ikonos")]
-    public Image musicIconImage; // Pakeista iš soundIconImage
-    public Image sfxIconImage;   // Pridėta SFX ikonai
+    public Image musicIconImage;
+    public Image sfxIconImage;   
     public Sprite soundOnSprite;
     public Sprite soundOffSprite;
 
     private bool isPaused = false;
 
-    // Kintamieji garsumo atsiminimui po nutildymo
     private float savedMusicVolume = 0.5f;
     private float savedSFXVolume = 0.7f;
 
@@ -87,7 +86,6 @@ public class PauseMeniu : MonoBehaviour
         InventoryManager.ClearInventory();
     }
 
-    // --- MUZIKOS VALDYMAS ---
     public void SetMusicVolume(float volume)
     {
         if (AudioManager.Instance != null) AudioManager.Instance.SetMasterMusicVolume(volume);
@@ -108,7 +106,6 @@ public class PauseMeniu : MonoBehaviour
         }
     }
 
-    // --- SFX VALDYMAS ---
     public void SetSFXVolume(float volume)
     {
         if (AudioManager.Instance != null) AudioManager.Instance.SetMasterSFXVolume(volume);

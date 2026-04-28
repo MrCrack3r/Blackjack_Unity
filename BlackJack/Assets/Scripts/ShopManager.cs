@@ -12,7 +12,7 @@ public class ShopManager : MonoBehaviour
     public TextMeshProUGUI notificationText;
 
     [Header("Visos Galimos Kortos Žaidime")]
-    public List<PowerUpData> allAvailablePowerUps; // Parduotuvė dabar turės savo sąrašą
+    public List<PowerUpData> allAvailablePowerUps;
 
     [Header("Parduotuvės Prekės (3 Slotai)")]
     public ShopItem[] shopSlots;
@@ -36,7 +36,7 @@ public class ShopManager : MonoBehaviour
 
     private void GenerateRandomShop()
     {
-        // Tikriname ar įdėjai kortas į ShopManager
+
         if (allAvailablePowerUps == null || allAvailablePowerUps.Count == 0) return;
 
         List<PowerUpData> availableCards = new List<PowerUpData>(allAvailablePowerUps);
@@ -81,7 +81,6 @@ public class ShopManager : MonoBehaviour
             RunManager.instance.NextRound();
         }
 
-        // PATAISYTA: Dabar tiksliai atitinka tavo scenos pavadinimą (Backjack)
         SceneManager.LoadScene("Backjack_table_scene");
     }
 }

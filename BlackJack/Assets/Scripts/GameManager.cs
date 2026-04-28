@@ -951,7 +951,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // ===== POWERUP FLAGS =====
     public bool doubleRewardActive = false;
     public bool shieldActive = false;
     public bool premiumInsuranceActive = false;

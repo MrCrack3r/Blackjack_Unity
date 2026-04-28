@@ -129,7 +129,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // --- SFX ---
     public void PlayPlayerCardSound() { PlayRandom(playerCardSounds); }
     public void PlayDealerCardSound() { PlayRandom(dealerCardSounds); }
     public void PlayFlipSound() { PlayRandom(flipSounds); }

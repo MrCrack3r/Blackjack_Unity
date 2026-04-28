@@ -46,9 +46,6 @@ public class ModifierManager : MonoBehaviour
         }
     }
 
-    // =========================
-    //  REALÛS EFEKTAI
-    // =========================
 
     void DoubleReward()
     {
