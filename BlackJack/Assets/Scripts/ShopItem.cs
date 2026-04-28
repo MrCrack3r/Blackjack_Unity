@@ -30,11 +30,13 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (itemData == null) return;
 
-        if (RunManager.instance.playerMoney < itemData.baseCost)
+        if (ShopManager.instance != null && !ShopManager.instance.ValidatePurchase(itemData.baseCost))
         {
-            if (ShopManager.instance != null) ShopManager.instance.ShowNotification("Not enough money!", Color.red);
+            int minBet = ShopManager.instance.minimumBetRequired;
+            ShopManager.instance.ShowNotification($"Nepakanka lėšų! Turi likti bent ${minBet} sekanciam raundui.", Color.red);
             return;
         }
+
 
         if (InventoryManager.powerUps.Count < 4)
         {

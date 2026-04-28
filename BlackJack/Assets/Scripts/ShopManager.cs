@@ -17,6 +17,9 @@ public class ShopManager : MonoBehaviour
     [Header("Parduotuvės Prekės (3 Slotai)")]
     public ShopItem[] shopSlots;
 
+    [Header("Pirkimo Taisyklės")]
+    public int minimumBetRequired = 1;
+
     void Awake()
     {
         instance = this;
@@ -54,6 +57,18 @@ public class ShopManager : MonoBehaviour
             shopSlots[i].Setup(randomCard);
             shopSlots[i].gameObject.SetActive(true);
         }
+    }
+
+    public bool ValidatePurchase(int itemCost)
+    {
+        int balanceAfterPurchase = RunManager.instance.playerMoney - itemCost;
+
+        if (balanceAfterPurchase < minimumBetRequired)
+        {
+            return false; 
+        }
+
+        return true; 
     }
 
     public void ShowNotification(string message, Color color)

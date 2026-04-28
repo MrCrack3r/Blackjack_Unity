@@ -35,6 +35,7 @@ public class AudioManager : MonoBehaviour
     [Header("Bendra kontrolė")]
     [Range(0f, 1f)] public float masterMusicVolume = 0.5f;
     [Range(0f, 1f)] public float masterSFXVolume = 0.7f;
+    private float currentMusicBaseVolume = 1f;
 
     private AudioSource sfxSource; 
     private AudioSource musicSource;
@@ -46,6 +47,8 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            masterMusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+            masterSFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0.7f);
             SetupSources();
         }
         else
@@ -112,6 +115,7 @@ public class AudioManager : MonoBehaviour
 
         musicSource.Stop();
         musicSource.loop = false;
+        currentMusicBaseVolume = s.volume;
         musicSource.volume = s.volume * masterMusicVolume;
 
         if (s.introClip != null)
@@ -147,7 +151,7 @@ public class AudioManager : MonoBehaviour
         if (musicSource != null) musicSource.volume = volume;
     }
 
-    public void SetMasterSFXVolume(float volume) { masterSFXVolume = volume; }
+    public void SetMasterSFXVolume(float volume) { masterSFXVolume = volume; PlayerPrefs.SetFloat("SFXVolume", masterSFXVolume); PlayerPrefs.Save(); }
     public void PauseMusic() { if (musicSource.isPlaying) musicSource.Pause(); }
     public void UnPauseMusic() { musicSource.UnPause(); }
 
