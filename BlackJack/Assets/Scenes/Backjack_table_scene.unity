@@ -8514,6 +8514,11 @@ MonoBehaviour:
   playerLives: 3
   playerMoney: 200
   gamesPlayed: 0
+  highestMoneyThisRun: 200
+  powerUpsBoughtThisRun: 0
+  handsWonThisRun: 0
+  handsLostThisRun: 0
+  cardsUsedThisRun: 0
 --- !u!4 &1891295059
 Transform:
   m_ObjectHideFlags: 0
