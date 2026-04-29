@@ -11,8 +11,10 @@ public class RunManager : MonoBehaviour
     public int playerLives = 3;
     public int playerMoney = 200;
     public int gamesPlayed = 0;
+	public int highestMoneyThisRun = 200;
+	public int powerUpsBoughtThisRun = 0;
 
-    void Awake()
+	void Awake()
     {
         if (instance == null)
         {
@@ -44,13 +46,25 @@ public class RunManager : MonoBehaviour
     public void OnHandWon(int betAmount)
     {
         playerMoney += betAmount * 2;
-        handsSurvivedThisRound++;
+
+		if (playerMoney > highestMoneyThisRun)
+		{
+			highestMoneyThisRun = playerMoney;
+		}
+
+		handsSurvivedThisRound++;
     }
 
     public void OnHandPush(int betAmount)
     {
         playerMoney += betAmount;
-        handsSurvivedThisRound++;
+
+		if (playerMoney > highestMoneyThisRun)
+		{
+			highestMoneyThisRun = playerMoney;
+		}
+
+		handsSurvivedThisRound++;
     }
 
     public void OnHandLost(int betAmount)
@@ -93,10 +107,36 @@ public class RunManager : MonoBehaviour
         handsSurvivedThisRound = 0;
         playerLives = 3;
         playerMoney = 200;
-        SetupRound();
-    }
+		gamesPlayed = 0;
+		highestMoneyThisRun = 200;
+		powerUpsBoughtThisRun = 0;
 
-    private void OpenShop()
+		SetupRound();
+	}
+
+	private void SaveEndGameStats()
+	{
+		PlayerPrefs.SetInt("LastRunRound", currentRound);
+		PlayerPrefs.SetInt("LastRunMoney", playerMoney);
+		PlayerPrefs.SetInt("LastRunGames", gamesPlayed);
+		PlayerPrefs.SetInt("LastRunPowerUps", powerUpsBoughtThisRun);
+
+		int bestRound = PlayerPrefs.GetInt("BestRound", 0);
+		if (currentRound > bestRound)
+		{
+			PlayerPrefs.SetInt("BestRound", currentRound);
+		}
+
+		int bestMoney = PlayerPrefs.GetInt("BestMoney", 0);
+		if (highestMoneyThisRun > bestMoney)
+		{
+			PlayerPrefs.SetInt("BestMoney", highestMoneyThisRun);
+		}
+
+		PlayerPrefs.Save();
+	}
+
+	private void OpenShop()
     {
         Debug.Log("Atidaroma parduotuvė...");
         SceneManager.LoadScene("Shop");
@@ -104,10 +144,18 @@ public class RunManager : MonoBehaviour
 
     private void GameOver()
     {
-        Debug.Log("GAME OVER! Pasiektas: Round " + currentRound);
-        PlayerPrefs.DeleteAll();
-        SceneManager.LoadScene("End_screen");
-    }
+		Debug.Log("GAME OVER! Pasiektas: Round " + currentRound);
+
+		SaveEndGameStats();
+
+		PlayerPrefs.DeleteKey("Money");
+		PlayerPrefs.DeleteKey("Lives");
+		PlayerPrefs.DeleteKey("Round");
+		PlayerPrefs.DeleteKey("Games");
+		PlayerPrefs.DeleteKey("PowerUpCount");
+
+		SceneManager.LoadScene("End_screen");
+	}
 
     public void SaveGame()
     {
