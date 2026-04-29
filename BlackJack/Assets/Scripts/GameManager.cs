@@ -249,7 +249,9 @@ public class GameManager : MonoBehaviour
 
         display.SetupCard(randomSprite, false);
 
-        yield return null;
+		RunManager.instance.cardsUsedThisRun++;
+
+		yield return null;
 
         Vector3 startPos = deckPosition != null ? deckPosition.position : area.position;
 
@@ -295,7 +297,9 @@ public class GameManager : MonoBehaviour
 
         display.SetupCard(randomSprite, faceUp);
 
-        if (playSound && AudioManager.Instance != null)
+		RunManager.instance.cardsUsedThisRun++;
+
+		if (playSound && AudioManager.Instance != null)
         {
             if (area == playerHandArea || area == playerSplitHandArea)
                 AudioManager.Instance.PlayPlayerCardSound();

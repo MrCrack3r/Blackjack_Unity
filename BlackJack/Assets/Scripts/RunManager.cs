@@ -13,6 +13,9 @@ public class RunManager : MonoBehaviour
     public int gamesPlayed = 0;
 	public int highestMoneyThisRun = 200;
 	public int powerUpsBoughtThisRun = 0;
+	public int handsWonThisRun = 0;
+	public int handsLostThisRun = 0;
+	public int cardsUsedThisRun = 0;
 
 	void Awake()
     {
@@ -53,7 +56,8 @@ public class RunManager : MonoBehaviour
 		}
 
 		handsSurvivedThisRound++;
-    }
+		handsWonThisRun++;
+	}
 
     public void OnHandPush(int betAmount)
     {
@@ -71,8 +75,9 @@ public class RunManager : MonoBehaviour
     {
         handsSurvivedThisRound++;
         playerLives--;
+		handsLostThisRun++;
 
-        if (AudioManager.Instance != null)
+		if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayDamageSound();
         }
@@ -110,6 +115,9 @@ public class RunManager : MonoBehaviour
 		gamesPlayed = 0;
 		highestMoneyThisRun = 200;
 		powerUpsBoughtThisRun = 0;
+		handsWonThisRun = 0;
+		handsLostThisRun = 0;
+		cardsUsedThisRun = 0;
 
 		SetupRound();
 	}
@@ -120,6 +128,9 @@ public class RunManager : MonoBehaviour
 		PlayerPrefs.SetInt("LastRunMoney", playerMoney);
 		PlayerPrefs.SetInt("LastRunGames", gamesPlayed);
 		PlayerPrefs.SetInt("LastRunPowerUps", powerUpsBoughtThisRun);
+		PlayerPrefs.SetInt("LastRunHandsWon", handsWonThisRun);
+		PlayerPrefs.SetInt("LastRunHandsLost", handsLostThisRun);
+		PlayerPrefs.SetInt("LastRunCardsUsed", cardsUsedThisRun);
 
 		int bestRound = PlayerPrefs.GetInt("BestRound", 0);
 		if (currentRound > bestRound)
