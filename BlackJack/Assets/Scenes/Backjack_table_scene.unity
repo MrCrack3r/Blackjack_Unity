@@ -3658,6 +3658,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 832944986}
   m_CullTransparentMesh: 1
+--- !u!1 &883769216
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 883769218}
+  - component: {fileID: 883769217}
+  m_Layer: 0
+  m_Name: BossManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &883769217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883769216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1ae95eb9193bc140815b78c1769d754, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossModifierManager
+  currentModifier: 0
+  modifierPanel: {fileID: 0}
+  modifierText: {fileID: 0}
+--- !u!4 &883769218
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883769216}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 872.3142, y: 471.80273, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &908302443
 GameObject:
   m_ObjectHideFlags: 0
@@ -7691,6 +7738,8 @@ MonoBehaviour:
   handsWonThisRun: 0
   handsLostThisRun: 0
   cardsUsedThisRun: 0
+  isBossRound: 0
+  roundsSinceLastBoss: 0
 --- !u!4 &1891295059
 Transform:
   m_ObjectHideFlags: 0
@@ -8732,3 +8781,4 @@ SceneRoots:
   - {fileID: 88765689}
   - {fileID: 300685204}
   - {fileID: 589201231}
+  - {fileID: 883769218}
