@@ -1,26 +1,37 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InventorySlotUI : MonoBehaviour
 {
     public int slotIndex;
+    public int sellValue = 100; 
 
     public void OnClick()
     {
+   
         if (ShopManager.instance == null)
         {
-            Debug.Log("Kortas galima mesti tik shop'e!");
+            Debug.Log("Parduoti galima tik shop'e!");
             return;
         }
 
         if (slotIndex >= InventoryManager.powerUps.Count)
             return;
 
-        Debug.Log("Išmesta korta: " + InventoryManager.powerUps[slotIndex].powerUpName);
+        PowerUpData powerUp = InventoryManager.powerUps[slotIndex];
 
-        ShopManager.instance.ShowNotification("Išmesta: " + InventoryManager.powerUps[slotIndex].powerUpName, Color.yellow);
+        Debug.Log("Parduota korta: " + powerUp.powerUpName);
 
+ 
+        RunManager.instance.playerMoney += sellValue;
+
+     
         InventoryManager.powerUps.RemoveAt(slotIndex);
+
+       
         InventoryManager.instance.UpdateInventoryUI();
+
+
+        if (ShopManager.instance != null)
+            ShopManager.instance.ShowNotification("Sold for $" + sellValue, Color.green);
     }
 }

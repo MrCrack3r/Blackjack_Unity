@@ -118,6 +118,8 @@ public class GameManager : MonoBehaviour
 
         if (currentState == GameState.PlayerTurn && Keyboard.current.dKey.wasPressedThisFrame)
             Double();
+
+        HandleKeyboardInput();
     }
 
     public void ChangeState(GameState newState)
@@ -954,6 +956,104 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.RoundOver);
     }
 
+    private void HandleKeyboardInput()
+    {
+        // 👉 DEAL (kai betting state)
+        if (currentState == GameState.Betting && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            OnDealButton();
+            return;
+        }
+
+        // 👉 PLAYER TURN inputai
+        if (currentState != GameState.PlayerTurn)
+            return;
+
+        // SPACE = HIT
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            Hit();
+        }
+
+        // S = STAND
+        if (Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            Stand();
+        }
+
+        // D = DOUBLE
+        if (Keyboard.current.dKey.wasPressedThisFrame)
+        {
+            Double();
+        }
+
+        // 👉 POWERUPS (1–4)
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+            TryUsePowerUp(0);
+
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+            TryUsePowerUp(1);
+
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
+            TryUsePowerUp(2);
+
+        if (Keyboard.current.digit4Key.wasPressedThisFrame)
+            TryUsePowerUp(3);
+    }
+
+    private void TryUsePowerUp(int index)
+    {
+        if (ModifierManager.Instance == null)
+            return;
+
+        if (index >= InventoryManager.powerUps.Count)
+            return;
+
+        ModifierManager.Instance.ActivatePowerUp(index);
+    }
+
+    public void AllIn()
+    {
+        if (currentState != GameState.Betting)
+        {
+            Debug.Log("All-in galima tik statymo fazėje!");
+            return;
+        }
+
+        int playerMoney = RunManager.instance.playerMoney;
+
+        if (playerMoney <= 0)
+        {
+            Debug.Log("Neturi pinigų!");
+            return;
+        }
+
+        currentBet += playerMoney;
+        RunManager.instance.playerMoney = 0;
+
+        UpdateMoneyUI();
+
+        Debug.Log("All-in! Statymas: " + currentBet);
+    }
+
+    public void ClearBet()
+    {
+        if (currentState != GameState.Betting)
+        {
+            Debug.Log("Negalima išvalyti statymo dabar!");
+            return;
+        }
+
+        if (currentBet <= 0)
+            return;
+
+        RunManager.instance.playerMoney += currentBet;
+        currentBet = 0;
+
+        UpdateMoneyUI();
+
+        Debug.Log("Statymas išvalytas.");
+    }
 
     public bool doubleRewardActive = false;
     public bool shieldActive = false;
