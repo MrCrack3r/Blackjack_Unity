@@ -28,16 +28,26 @@ public class AudioManager : MonoBehaviour
 
     [Header("Garso Efektai (SFX)")]
     public AudioClip clickSound;
+    [Range(0f, 1f)] public float clickVolume = 1f;
+
     public AudioClip coinSound;
+    [Range(0f, 1f)] public float coinVolume = 1f;
+
     public AudioClip damageSound;
+    [Range(0f, 1f)] public float damageVolume = 1f;
+
     public AudioClip actionButton;
+    [Range(0f, 1f)] public float actionButtonVolume = 1f;
+
+    public AudioClip powerUpSound;
+    [Range(0f, 1f)] public float powerUpVolume = 1f;
 
     [Header("Bendra kontrolė")]
     [Range(0f, 1f)] public float masterMusicVolume = 0.5f;
     [Range(0f, 1f)] public float masterSFXVolume = 0.7f;
     private float currentMusicBaseVolume = 1f;
 
-    private AudioSource sfxSource; 
+    private AudioSource sfxSource;
     private AudioSource musicSource;
     private Coroutine musicCoroutine;
 
@@ -148,7 +158,7 @@ public class AudioManager : MonoBehaviour
     public void SetMasterMusicVolume(float volume)
     {
         masterMusicVolume = volume;
-        if (musicSource != null) musicSource.volume = volume;
+        if (musicSource != null) musicSource.volume = currentMusicBaseVolume * masterMusicVolume;
     }
 
     public void SetMasterSFXVolume(float volume) { masterSFXVolume = volume; PlayerPrefs.SetFloat("SFXVolume", masterSFXVolume); PlayerPrefs.Save(); }
@@ -159,7 +169,7 @@ public class AudioManager : MonoBehaviour
     {
         if (sfxSource != null && clickSound != null)
         {
-            sfxSource.PlayOneShot(clickSound, masterSFXVolume);
+            sfxSource.PlayOneShot(clickSound, clickVolume * masterSFXVolume);
         }
     }
 
@@ -167,7 +177,7 @@ public class AudioManager : MonoBehaviour
     {
         if (sfxSource != null && coinSound != null)
         {
-            sfxSource.PlayOneShot(coinSound, masterSFXVolume);
+            sfxSource.PlayOneShot(coinSound, coinVolume * masterSFXVolume);
         }
     }
 
@@ -175,7 +185,7 @@ public class AudioManager : MonoBehaviour
     {
         if (sfxSource != null && damageSound != null)
         {
-            sfxSource.PlayOneShot(damageSound, masterSFXVolume);
+            sfxSource.PlayOneShot(damageSound, damageVolume * masterSFXVolume);
         }
     }
 
@@ -183,7 +193,15 @@ public class AudioManager : MonoBehaviour
     {
         if (sfxSource != null && actionButton != null)
         {
-            sfxSource.PlayOneShot(actionButton, masterSFXVolume);
+            sfxSource.PlayOneShot(actionButton, actionButtonVolume * masterSFXVolume);
+        }
+    }
+
+    public void PlayPowerUpSound()
+    {
+        if (sfxSource != null && powerUpSound != null)
+        {
+            sfxSource.PlayOneShot(powerUpSound, powerUpVolume * masterSFXVolume);
         }
     }
 }
