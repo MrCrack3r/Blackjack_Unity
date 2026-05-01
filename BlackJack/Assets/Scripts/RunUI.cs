@@ -46,7 +46,19 @@ public class RunUI : MonoBehaviour
             handNum = handReq;
         }
 
-        roundText.text = $"Round {round} | Hand {handNum} / {handReq}";
+        // --- NAUJA BOSO RAUNDO LOGIKA ---
+        if (RunManager.instance.isBossRound)
+        {
+            // Boso raundo metu rodome "BOSS ROUND!" tekstą
+            roundText.text = $"BOSS ROUND! | Hand {handNum} / {handReq}";
+            roundText.color = Color.red; // Padarome tekstą raudoną
+        }
+        else
+        {
+            // Normalaus raundo tekstas
+            roundText.text = $"Round {round} | Hand {handNum} / {handReq}";
+            roundText.color = Color.white; // Grąžiname atgal į baltą spalvą
+        }
     }
 
     private void UpdateHearts()
