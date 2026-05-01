@@ -7,6 +7,8 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Prekės Nustatymai")]
     public PowerUpData itemData;
+    private int currentDynamicPrice;
+
 
     [Header("Prekės UI")]
     public TextMeshProUGUI nameText;
@@ -14,14 +16,14 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Image iconImage;
 
 
-    public void Setup(PowerUpData newData)
+    public void Setup(PowerUpData newData, int dynamicPrice)
     {
         itemData = newData;
-
+        currentDynamicPrice = dynamicPrice; 
         if (itemData != null)
         {
             if (nameText != null) nameText.text = itemData.powerUpName;
-            if (priceText != null) priceText.text = "$" + itemData.baseCost;
+            if (priceText != null) priceText.text = "$" + currentDynamicPrice;
             if (iconImage != null) iconImage.sprite = itemData.icon;
         }
     }
@@ -30,7 +32,7 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (itemData == null) return;
 
-        if (ShopManager.instance != null && !ShopManager.instance.ValidatePurchase(itemData.baseCost))
+        if (ShopManager.instance != null && !ShopManager.instance.ValidatePurchase(currentDynamicPrice))
         {
             int minBet = ShopManager.instance.minimumBetRequired;
             ShopManager.instance.ShowNotification($"Nepakanka lėšų! Turi likti bent ${minBet} sekanciam raundui.", Color.red);
@@ -40,8 +42,8 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (InventoryManager.powerUps.Count < 4)
         {
-            InventoryManager.powerUps.Add(itemData); 
-            RunManager.instance.playerMoney -= itemData.baseCost;
+            InventoryManager.powerUps.Add(itemData);
+            RunManager.instance.playerMoney -= currentDynamicPrice;
 
             if (AudioManager.Instance != null) AudioManager.Instance.PlayCoinSound();
 

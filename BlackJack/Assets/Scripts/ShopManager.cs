@@ -20,6 +20,10 @@ public class ShopManager : MonoBehaviour
     [Header("Pirkimo Taisyklės")]
     public int minimumBetRequired = 1;
 
+    [Header("Kainų Infliacija")]
+    [Tooltip("Kiek procentų brangsta prekė kiekviename raunde (pvz. 0.2 = 20% brangiau kiekvieną raundą)")]
+    public float priceMultiplierPerRound = 0.2f;
+
     void Awake()
     {
         instance = this;
@@ -54,9 +58,24 @@ public class ShopManager : MonoBehaviour
 
             availableCards.RemoveAt(randomIndex);
 
-            shopSlots[i].Setup(randomCard);
+            int finalPrice = CalculateDynamicPrice(randomCard.baseCost);
+
+            shopSlots[i].Setup(randomCard, finalPrice);
             shopSlots[i].gameObject.SetActive(true);
         }
+    }
+
+    public int CalculateDynamicPrice(int baseCost)
+    {
+        int round = 1;
+        if (RunManager.instance != null)
+        {
+            round = RunManager.instance.currentRound;
+        }
+
+        float inflatedPrice = baseCost + (baseCost * priceMultiplierPerRound * (round - 1));
+
+        return Mathf.RoundToInt(inflatedPrice);
     }
 
     public bool ValidatePurchase(int itemCost)
