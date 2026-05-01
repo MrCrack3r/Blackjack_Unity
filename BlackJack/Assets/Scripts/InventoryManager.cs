@@ -55,10 +55,12 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
+    // Šią funkciją naudos BossModifierManager kortos vagystei
     public void RemovePowerUpAt(int index)
     {
         if (index >= 0 && index < powerUps.Count)
         {
+            Debug.Log("Inventorius: Ištrinama korta " + powerUps[index].name + " iš indekso " + index);
             powerUps.RemoveAt(index);
             UpdateInventoryUI();
         }
