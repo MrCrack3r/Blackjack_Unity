@@ -25,6 +25,12 @@ public class ModifierManager : MonoBehaviour
 
         Debug.Log("Naudojama: " + powerUp.powerUpName);
 
+        if (CardUseAnimator.Instance != null && InventoryManager.instance != null)
+        {
+            Vector3 slotPosition = InventoryManager.instance.inventorySlots[index].transform.position;
+            CardUseAnimator.Instance.AnimateCardUse(slotPosition, powerUp.icon, powerUp.powerUpName);
+        }
+
         ApplyPowerUp(powerUp);
 
         InventoryManager.powerUps.RemoveAt(index);
@@ -45,7 +51,6 @@ public class ModifierManager : MonoBehaviour
             case 8: SkipHand(); break;
         }
     }
-
 
     void DoubleReward()
     {
