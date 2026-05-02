@@ -44,7 +44,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Bendra kontrolė")]
     [Range(0f, 1f)] public float masterMusicVolume = 0.5f;
-    [Range(0f, 1f)] public float masterSFXVolume = 0.7f;
+    [Range(0f, 1f)] public float masterSFXVolume = 1f;
     private float currentMusicBaseVolume = 1f;
 
     private AudioSource sfxSource;
@@ -53,12 +53,13 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
             masterMusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
-            masterSFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0.7f);
+            masterSFXVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
             SetupSources();
         }
         else

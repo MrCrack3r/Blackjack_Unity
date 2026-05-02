@@ -10,25 +10,29 @@ public class SettingsMenu : MonoBehaviour
 
     void Start()
     {
-        // 1. Žaidimo pradžioje paslepiame nustatymų langą
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(false);
         }
 
-        // 2. Nustatome slankiklių pozicijas pagal išsaugotas AudioManager reikšmes
         if (AudioManager.Instance != null)
         {
-            if (musicSlider != null) musicSlider.value = AudioManager.Instance.masterMusicVolume;
-            if (sfxSlider != null) sfxSlider.value = AudioManager.Instance.masterSFXVolume;
+            if (musicSlider != null)
+            {
+                musicSlider.SetValueWithoutNotify(AudioManager.Instance.masterMusicVolume);
+                musicSlider.onValueChanged.AddListener(OnMusicSliderChanged);
+            }
+            if (sfxSlider != null)
+            {
+                sfxSlider.SetValueWithoutNotify(AudioManager.Instance.masterSFXVolume);
+                sfxSlider.onValueChanged.AddListener(OnSFXSliderChanged);
+            }
         }
     }
 
-    // --- Mygtukų funkcijos ---
     public void OpenSettings()
     {
         if (settingsPanel != null) settingsPanel.SetActive(true);
-        // Sugrojame mygtuko garsą atidarant
         if (AudioManager.Instance != null) AudioManager.Instance.PlayClickSound();
     }
 
@@ -38,7 +42,6 @@ public class SettingsMenu : MonoBehaviour
         if (AudioManager.Instance != null) AudioManager.Instance.PlayClickSound();
     }
 
-    // --- Slankiklių (Slider) funkcijos ---
     public void OnMusicSliderChanged(float value)
     {
         if (AudioManager.Instance != null)

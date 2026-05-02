@@ -12,31 +12,31 @@ public class PauseMeniu : MonoBehaviour
 
     [Header("Garso Ikonos")]
     public Image musicIconImage;
-    public Image sfxIconImage;   
+    public Image sfxIconImage;
     public Sprite soundOnSprite;
     public Sprite soundOffSprite;
 
     private bool isPaused = false;
 
     private float savedMusicVolume = 0.5f;
-    private float savedSFXVolume = 0.7f;
+    private float savedSFXVolume = 1f;
 
     void Start()
     {
         if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
 
         float savedMusic = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
-        float savedSFX = PlayerPrefs.GetFloat("SFXVolume", 0.7f);
+        float savedSFX = PlayerPrefs.GetFloat("SFXVolume", 1f);
 
         if (musicSlider != null)
         {
-            musicSlider.value = savedMusic;
+            musicSlider.SetValueWithoutNotify(savedMusic);
             musicSlider.onValueChanged.AddListener(SetMusicVolume);
         }
 
         if (sfxSlider != null)
         {
-            sfxSlider.value = savedSFX;
+            sfxSlider.SetValueWithoutNotify(savedSFX);
             sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         }
 
@@ -74,15 +74,18 @@ public class PauseMeniu : MonoBehaviour
         if (AudioManager.Instance != null) AudioManager.Instance.UnPauseMusic();
     }
 
-    public void RestartGame() { 
-        Time.timeScale = 1f; 
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         InventoryManager.ClearInventory();
     }
-    public void LoadMainMenu() { 
+
+    public void LoadMainMenu()
+    {
         Time.timeScale = 1f;
-		RunManager.instance.SaveGame();
-		SceneManager.LoadScene("Main_menu_scene");
+        RunManager.instance.SaveGame();
+        SceneManager.LoadScene("Main_menu_scene");
         InventoryManager.ClearInventory();
     }
 
@@ -122,7 +125,7 @@ public class PauseMeniu : MonoBehaviour
         }
         else
         {
-            sfxSlider.value = (savedSFXVolume > 0.01f) ? savedSFXVolume : 0.7f;
+            sfxSlider.value = (savedSFXVolume > 0.01f) ? savedSFXVolume : 1f;
         }
     }
 
