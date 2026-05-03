@@ -2331,22 +2331,19 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Blackjack taisykl\u0117s\n\nTikslas \u2013 surinkti kort\u0173 sum\u0105
-    kuo ar\u010Diau 21, bet jos nevir\u0161yti.\n\nKort\u0173 vert\u0117s:\n2\u201310
-    \u2013 pagal skai\u010Di\u0173\nJ, Q, K \u2013 10 ta\u0161k\u0173\nT\u016Bzas
-    \u2013 1 arba 11 ta\u0161k\u0173\n\n\u017Daid\u0117jo veiksmai:\n\nHit \u2013
-    paimti papildom\u0105 kort\u0105.\n\nStand \u2013 sustoti ir neimti daugiau kort\u0173.\n\nDouble
-    Down \u2013 padvigubinti statym\u0105 ir paimti tik vien\u0105 papildom\u0105
-    kort\u0105.\n\nSplit \u2013 jei pirmos dvi kortos yra vienodos vert\u0117s, jas
-    galima padalinti \u012F dvi atskiras rankas.\nKiekvienai rankai pridedama po
-    vien\u0105 nauj\u0105 kort\u0105 ir \u017Eaid\u017Eiama atskirai.\n\nBlackjack
-    \u2013 jei pirmos dvi kortos sudaro 21 (T\u016Bzas + 10/J/Q/K), tai yra Blackjack
-    ir da\u017Eniausiai tai yra automatin\u0117 pergal\u0117.\n\nDalintojo taisykl\u0117s:\nDalintojas
-    privalo traukti kortas tol, kol surenka bent 17 ta\u0161k\u0173.\n\nPergal\u0117
-    ir pralaim\u0117jimas:\nJei \u017Eaid\u0117jas vir\u0161ija 21 \u2013 jis pralaimi.\nJei
-    dalintojas vir\u0161ija 21 \u2013 \u017Eaid\u0117jas laimi.\nJei abu nevir\u0161ija
-    21 \u2013 laimi tas, kurio suma didesn\u0117.\nJei sumos vienodos \u2013 lygiosios
-    (Push)."
+  m_text: "Blackjack Rules\n\nGoal \u2013 get a card total as close to 21 as possible
+    without going over 21.\n\nCard Values\n\n2\u201310 \u2013 worth their number
+    value\nJ, Q, K \u2013 worth 10 points\nAce \u2013 worth 1 or 11 points\n\nPlayer
+    Actions\n\nHit \u2013 take an additional card.\n\nStand \u2013 stop and take
+    no more cards.\n\nDouble Down \u2013 double the bet and take only one additional
+    card.\n\nSplit \u2013 if the first two cards have the same value, they can be
+    split into two separate hands.\nEach hand receives one new card and is played
+    separately.\n\nBlackjack \u2013 if the first two cards make 21 points, meaning
+    an Ace + 10/J/Q/K, it is Blackjack and usually an automatic win.\n\nDealer Rules\n\nThe
+    dealer must draw cards until they have at least 17 points.\n\nWinning and Losing\n\nIf
+    the player goes over 21, the player loses.\n\nIf the dealer goes over 21, the
+    player wins.\n\nIf both the player and dealer stay at 21 or below, the higher
+    total wins.\n\nIf the totals are equal, it is a tie, called a Push."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2373,10 +2370,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 26.1
+  m_fontSizeBase: 29
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0

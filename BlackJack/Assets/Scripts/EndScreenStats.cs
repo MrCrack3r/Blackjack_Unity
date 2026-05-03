@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
 
-
 public class EndScreenStats : MonoBehaviour
 {
 	public TMP_Text lastRunRoundText;
@@ -17,15 +16,15 @@ public class EndScreenStats : MonoBehaviour
 
 	void Start()
 	{
-		lastRunRoundText.text = "Pasiektas raundas: " + PlayerPrefs.GetInt("LastRunRound", 0);
-		lastRunMoneyText.text = "Likęs biudžetas: $" + PlayerPrefs.GetInt("LastRunMoney", 0);
-		lastRunGamesText.text = "Sužaista partijų: " + PlayerPrefs.GetInt("LastRunGames", 0);
-		lastRunPowerUpsText.text = "Nupirkta galių: " + PlayerPrefs.GetInt("LastRunPowerUps", 0);
-		lastRunHandsWonText.text = "Laimėta handų: " + PlayerPrefs.GetInt("LastRunHandsWon", 0);
-		lastRunHandsLostText.text = "Pralaimėta handų: " + PlayerPrefs.GetInt("LastRunHandsLost", 0);
-		lastRunCardsUsedText.text = "Sunaudota kortų: " + PlayerPrefs.GetInt("LastRunCardsUsed", 0);
+		lastRunRoundText.text = "Reached Round: " + PlayerPrefs.GetInt("LastRunRound", 0);
+		lastRunMoneyText.text = "Remaining Budget: $" + PlayerPrefs.GetInt("LastRunMoney", 0);
+		lastRunGamesText.text = "Games Played: " + PlayerPrefs.GetInt("LastRunGames", 0);
+		lastRunPowerUpsText.text = "Power-Ups Bought: " + PlayerPrefs.GetInt("LastRunPowerUps", 0);
+		lastRunHandsWonText.text = "Hands Won: " + PlayerPrefs.GetInt("LastRunHandsWon", 0);
+		lastRunHandsLostText.text = "Hands Lost: " + PlayerPrefs.GetInt("LastRunHandsLost", 0);
+		lastRunCardsUsedText.text = "Cards Used: " + PlayerPrefs.GetInt("LastRunCardsUsed", 0);
 
-		bestRoundText.text = "Geriausias raundas: " + PlayerPrefs.GetInt("BestRound", 0);
-		bestMoneyText.text = "Didžiausias biudžetas: $" + PlayerPrefs.GetInt("BestMoney", 0);
+		bestRoundText.text = "Best Round: " + PlayerPrefs.GetInt("BestRound", 0);
+		bestMoneyText.text = "Highest Budget: $" + PlayerPrefs.GetInt("BestMoney", 0);
 	}
 }
