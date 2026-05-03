@@ -11,5 +11,7 @@ public class PowerUpData : ScriptableObject
 
 	public int baseCost;
 
+    public bool isLifeItem;
+
 }
 

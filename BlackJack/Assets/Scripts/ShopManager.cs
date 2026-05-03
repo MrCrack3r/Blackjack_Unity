@@ -24,6 +24,10 @@ public class ShopManager : MonoBehaviour
     [Tooltip("Kiek procentų brangsta prekė kiekviename raunde (pvz. 0.2 = 20% brangiau kiekvieną raundą)")]
     public float priceMultiplierPerRound = 0.2f;
 
+    [Header("Life Item (visada rodomas)")]
+    public PowerUpData lifeItem;
+    public ShopItem lifeSlot;
+
     void Awake()
     {
         instance = this;
@@ -43,11 +47,14 @@ public class ShopManager : MonoBehaviour
 
     private void GenerateRandomShop()
     {
-
         if (allAvailablePowerUps == null || allAvailablePowerUps.Count == 0) return;
 
         List<PowerUpData> availableCards = new List<PowerUpData>(allAvailablePowerUps);
 
+        // ❗ pašalinam life item iš random pool
+        availableCards.Remove(lifeItem);
+
+        // 🎴 RANDOM SLOTAI
         for (int i = 0; i < shopSlots.Length; i++)
         {
             if (shopSlots[i] == null) continue;
@@ -58,10 +65,18 @@ public class ShopManager : MonoBehaviour
 
             availableCards.RemoveAt(randomIndex);
 
-            int finalPrice = CalculateDynamicPrice(randomCard.baseCost);
-
-            shopSlots[i].Setup(randomCard, finalPrice);
+            int dynamicPrice = randomCard.baseCost;
+            shopSlots[i].Setup(randomCard, dynamicPrice);
             shopSlots[i].gameObject.SetActive(true);
+        }
+
+        // ❤️ LIFE SLOT (VISADA)
+        if (lifeSlot != null && lifeItem != null)
+        {
+            int price = lifeItem.baseCost;
+
+            lifeSlot.Setup(lifeItem, price);
+            lifeSlot.gameObject.SetActive(true);
         }
     }
 

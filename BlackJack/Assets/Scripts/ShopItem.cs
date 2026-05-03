@@ -39,6 +39,26 @@ public class ShopItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             return;
         }
 
+        if (itemData.isLifeItem)
+        {
+            if (RunManager.instance.playerLives >= 3)
+            {
+                ShopManager.instance.ShowNotification("Gyvybės pilnos!", Color.yellow);
+                return;
+            }
+
+            RunManager.instance.playerMoney -= currentDynamicPrice;
+            RunManager.instance.playerLives++;
+
+            if (RunUI.instance != null)
+                RunUI.instance.UpdateDisplay();
+
+            ShopManager.instance.ShowNotification("+1 Life!", Color.green);
+
+            gameObject.SetActive(false);
+            return;
+        }
+
 
         if (InventoryManager.powerUps.Count < 4)
         {
