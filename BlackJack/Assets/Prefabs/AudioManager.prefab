@@ -104,7 +104,14 @@ MonoBehaviour:
     loopClip: {fileID: 8300000, guid: f59504347e42f0f478ae8051cc64fcb3, type: 3}
     volume: 0.802
   clickSound: {fileID: 8300000, guid: 3d48c71a0ae6c4244bae47a455a88afe, type: 3}
+  clickVolume: 1
   coinSound: {fileID: 8300000, guid: abca66ce42006e24fa3290770e13dcf2, type: 3}
+  coinVolume: 1
   damageSound: {fileID: 8300000, guid: d4aaa27326a9cff47b150000fbfbd402, type: 3}
+  damageVolume: 1
+  actionButton: {fileID: 8300000, guid: eb908d2cdf57eaf489d45833748a3d7c, type: 3}
+  actionButtonVolume: 1
+  powerUpSound: {fileID: 8300000, guid: 331a425d60e45f44ea82e3596c247983, type: 3}
+  powerUpVolume: 0.621
   masterMusicVolume: 0.5
   masterSFXVolume: 0.7

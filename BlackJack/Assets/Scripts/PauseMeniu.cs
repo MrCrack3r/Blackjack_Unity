@@ -77,14 +77,23 @@ public class PauseMeniu : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        if (RunManager.instance != null)
+        {
+            RunManager.instance.ResetRun();
+        }
+
         InventoryManager.ClearInventory();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;
-        RunManager.instance.SaveGame();
+        if (RunManager.instance != null)
+        {
+            RunManager.instance.SaveGame();
+        }
         SceneManager.LoadScene("Main_menu_scene");
         InventoryManager.ClearInventory();
     }

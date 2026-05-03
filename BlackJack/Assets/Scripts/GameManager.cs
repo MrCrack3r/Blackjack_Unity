@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     public Button splitButton;
     public Button dealButton;
     public Button goToShopButton;
+    public Button allInButton;
+    public Button clearBetButton;
 
     [Header("Money UI")]
     public TextMeshProUGUI budgetText;
@@ -105,6 +107,7 @@ public class GameManager : MonoBehaviour
         secondHandBet = 0;
 
         UpdateMoneyUI();
+        UpdateScoreUI();
         ChangeState(GameState.Betting);
     }
 
@@ -162,6 +165,8 @@ public class GameManager : MonoBehaviour
 
     public void OnDealButton()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSound();
+
         if (currentState != GameState.Betting)
         {
             Debug.Log("Dabar negalima dealinti!");
@@ -251,9 +256,9 @@ public class GameManager : MonoBehaviour
 
         display.SetupCard(randomSprite, false);
 
-		RunManager.instance.cardsUsedThisRun++;
+        RunManager.instance.cardsUsedThisRun++;
 
-		yield return null;
+        yield return null;
 
         Vector3 startPos = deckPosition != null ? deckPosition.position : area.position;
 
@@ -299,9 +304,9 @@ public class GameManager : MonoBehaviour
 
         display.SetupCard(randomSprite, faceUp);
 
-		RunManager.instance.cardsUsedThisRun++;
+        RunManager.instance.cardsUsedThisRun++;
 
-		if (playSound && AudioManager.Instance != null)
+        if (playSound && AudioManager.Instance != null)
         {
             if (area == playerHandArea || area == playerSplitHandArea)
                 AudioManager.Instance.PlayPlayerCardSound();
@@ -362,6 +367,8 @@ public class GameManager : MonoBehaviour
 
     public void AddBet(int amount)
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayCoinSound();
+
         if (currentState != GameState.Betting)
         {
             Debug.Log("Negalima statyti dabar!");
@@ -378,10 +385,13 @@ public class GameManager : MonoBehaviour
         RunManager.instance.playerMoney -= amount;
 
         UpdateMoneyUI();
+        UpdateButtons();
     }
 
     public void Hit()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSound();
+
         if (currentState != GameState.PlayerTurn) return;
 
         int value;
@@ -448,6 +458,8 @@ public class GameManager : MonoBehaviour
 
     public void Stand()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSound();
+
         if (currentState != GameState.PlayerTurn) return;
 
         if (hasSplit && activeHandIndex == 0)
@@ -465,6 +477,8 @@ public class GameManager : MonoBehaviour
 
     public void Double()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSound();
+
         if (currentState != GameState.PlayerTurn) return;
 
         if (hasSplit)
@@ -512,6 +526,8 @@ public class GameManager : MonoBehaviour
 
     public void Split()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSound();
+
         if (currentState != GameState.PlayerTurn) return;
 
         if (hasSplit)
@@ -796,17 +812,46 @@ public class GameManager : MonoBehaviour
 
     private void ShowGoToShopButton()
     {
-        if (goToShopButton != null)
+        if (RunManager.instance != null && RunManager.instance.isBossRound)
         {
-            goToShopButton.gameObject.SetActive(true);
-            goToShopButton.onClick.RemoveAllListeners();
-            goToShopButton.onClick.AddListener(GoToShop);
+            StartCoroutine(BossDefeatedRoutine());
+        }
+        else
+        {
+            if (goToShopButton != null)
+            {
+                goToShopButton.gameObject.SetActive(true);
+                goToShopButton.onClick.RemoveAllListeners();
+                goToShopButton.onClick.AddListener(GoToShop);
+            }
+        }
+    }
+
+    private IEnumerator BossDefeatedRoutine()
+    {
+        if (resultText != null)
+        {
+            resultText.text = "BOSS DEFEATED!";
+            resultText.color = new Color(1f, 0.8f, 0f);
+            resultText.gameObject.SetActive(true);
+        }
+
+        if (endEffects != null)
+        {
+            endEffects.PlayWinEffect();
+        }
+
+        yield return new WaitForSeconds(3.5f);
+
+        if (RunManager.instance != null)
+        {
+            RunManager.instance.NextRound();
         }
     }
 
     public void GoToShop()
     {
-        Debug.Log("Einame į parduotuvę!");
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSound();
         SceneManager.LoadScene("Shop");
     }
 
@@ -849,6 +894,7 @@ public class GameManager : MonoBehaviour
     private void UpdateButtons()
     {
         bool playerTurn = currentState == GameState.PlayerTurn;
+        bool isBetting = currentState == GameState.Betting;
 
         if (hitButton != null)
             hitButton.interactable = playerTurn;
@@ -862,21 +908,29 @@ public class GameManager : MonoBehaviour
         if (splitButton != null)
             splitButton.interactable = playerTurn &&
                           !hasSplit &&
-                          !handshakeActive && 
+                          !handshakeActive &&
                           playerCardCount == 2 &&
                           firstPlayerCardValue == secondPlayerCardValue &&
                           RunManager.instance.playerMoney >= currentBet;
+
         if (dealButton != null)
-            dealButton.interactable = currentState == GameState.Betting;
+            dealButton.interactable = isBetting;
+
+        if (allInButton != null)
+            allInButton.interactable = isBetting && RunManager.instance.playerMoney > 0;
+
+        if (clearBetButton != null)
+            clearBetButton.interactable = isBetting && currentBet > 0;
 
         if (chipCanvasGroup != null)
         {
-            bool isBetting = currentState == GameState.Betting;
-
             chipCanvasGroup.alpha = isBetting ? 1f : 0.4f;
             chipCanvasGroup.interactable = isBetting;
             chipCanvasGroup.blocksRaycasts = isBetting;
         }
+
+        if (InventoryManager.instance != null)
+            InventoryManager.instance.UpdateInventoryUI();
     }
 
     private void ClearHand(Transform area)
@@ -1014,6 +1068,8 @@ public class GameManager : MonoBehaviour
 
     public void AllIn()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayCoinSound();
+
         if (currentState != GameState.Betting)
         {
             Debug.Log("All-in galima tik statymo fazėje!");
@@ -1032,12 +1088,15 @@ public class GameManager : MonoBehaviour
         RunManager.instance.playerMoney = 0;
 
         UpdateMoneyUI();
+        UpdateButtons();
 
         Debug.Log("All-in! Statymas: " + currentBet);
     }
 
     public void ClearBet()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayCoinSound();
+
         if (currentState != GameState.Betting)
         {
             Debug.Log("Negalima išvalyti statymo dabar!");
@@ -1051,6 +1110,7 @@ public class GameManager : MonoBehaviour
         currentBet = 0;
 
         UpdateMoneyUI();
+        UpdateButtons();
 
         Debug.Log("Statymas išvalytas.");
     }

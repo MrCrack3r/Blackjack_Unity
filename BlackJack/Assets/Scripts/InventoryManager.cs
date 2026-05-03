@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.InputSystem;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -16,6 +18,10 @@ public class InventoryManager : MonoBehaviour
     [Header("UI Elementai ekrane")]
     public Image[] inventorySlots;
 
+    [Header("Tooltip Nustatymai")]
+    public GameObject tooltipPanel;
+    public TextMeshProUGUI tooltipText;
+
     void Awake()
     {
         instance = this;
@@ -23,12 +29,59 @@ public class InventoryManager : MonoBehaviour
 
     void Start()
     {
+        if (tooltipPanel != null) tooltipPanel.SetActive(false);
+
+        if (powerUps.Count == 0 && PlayerPrefs.HasKey("HasStartCard"))
+        {
+            hasReceivedStartCard = PlayerPrefs.GetInt("HasStartCard", 0) == 1;
+            string savedInv = PlayerPrefs.GetString("SavedInventory", "");
+
+            if (!string.IsNullOrEmpty(savedInv))
+            {
+                string[] cardNames = savedInv.Split(',');
+                foreach (string cName in cardNames)
+                {
+                    foreach (PowerUpData data in allAvailablePowerUps)
+                    {
+                        if (data.name == cName)
+                        {
+                            powerUps.Add(data);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         if (!hasReceivedStartCard && powerUps.Count == 0)
         {
             hasReceivedStartCard = true;
             GiveRandomStartPowerUp();
         }
         UpdateInventoryUI();
+    }
+
+    void Update()
+    {
+        if (tooltipPanel != null && tooltipPanel.activeSelf)
+        {
+            if (Mouse.current != null)
+            {
+                Vector2 mousePos = Mouse.current.position.ReadValue();
+
+                RectTransform rect = tooltipPanel.GetComponent<RectTransform>();
+
+                float pivotX = mousePos.x / Screen.width > 0.5f ? 1f : 0f;
+                float pivotY = mousePos.y / Screen.height > 0.5f ? 1f : 0f;
+
+                rect.pivot = new Vector2(pivotX, pivotY);
+
+                float offsetX = pivotX == 0 ? 15f : -15f;
+                float offsetY = pivotY == 1 ? -15f : 15f;
+
+                tooltipPanel.transform.position = new Vector3(mousePos.x + offsetX, mousePos.y + offsetY, 0f);
+            }
+        }
     }
 
     public static void ClearInventory()
@@ -55,20 +108,21 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    // Šią funkciją naudos BossModifierManager kortos vagystei
     public void RemovePowerUpAt(int index)
     {
         if (index >= 0 && index < powerUps.Count)
         {
-            Debug.Log("Inventorius: Ištrinama korta " + powerUps[index].name + " iš indekso " + index);
             powerUps.RemoveAt(index);
             UpdateInventoryUI();
+            HideTooltip();
         }
     }
 
     public void UpdateInventoryUI()
     {
         if (inventorySlots == null) return;
+
+        bool canUse = (GameManager.Instance != null && GameManager.Instance.currentState == GameState.PlayerTurn);
 
         for (int i = 0; i < inventorySlots.Length; i++)
         {
@@ -79,12 +133,27 @@ public class InventoryManager : MonoBehaviour
                 inventorySlots[i].sprite = powerUps[i].icon;
                 inventorySlots[i].gameObject.SetActive(true);
                 inventorySlots[i].enabled = true;
-                inventorySlots[i].color = Color.white;
+
+                inventorySlots[i].color = canUse ? Color.white : new Color(0.4f, 0.4f, 0.4f, 1f);
             }
             else
             {
                 inventorySlots[i].gameObject.SetActive(false);
             }
         }
+    }
+
+    public void ShowTooltip(int index)
+    {
+        if (index >= 0 && index < powerUps.Count && tooltipPanel != null && tooltipText != null)
+        {
+            tooltipText.text = powerUps[index].powerUpName + "\n\n" + powerUps[index].description;
+            tooltipPanel.SetActive(true);
+        }
+    }
+
+    public void HideTooltip()
+    {
+        if (tooltipPanel != null) tooltipPanel.SetActive(false);
     }
 }

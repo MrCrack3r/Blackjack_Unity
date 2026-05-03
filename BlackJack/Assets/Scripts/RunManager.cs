@@ -17,7 +17,6 @@ public class RunManager : MonoBehaviour
     public int handsLostThisRun = 0;
     public int cardsUsedThisRun = 0;
 
-    // Boss Round kintamasis
     public bool isBossRound = false;
 
     void Awake()
@@ -40,16 +39,14 @@ public class RunManager : MonoBehaviour
 
     public int roundsSinceLastBoss = 0;
 
-    // PAKEISK SETUPROUND FUNKCIJĄ:
     public void SetupRound()
     {
-        handsRequiredThisRound = 2 + currentRound;
         handsSurvivedThisRound = 0;
 
-        // Patikriname, ar DABAR yra boso raundas
         if (isBossRound)
         {
-            Debug.Log("BOSS RAUNDAS AKTYVUOTAS!");
+            handsRequiredThisRound = 2;
+
             if (BossModifierManager.Instance != null)
             {
                 BossModifierManager.Instance.ApplyRandomModifier();
@@ -57,7 +54,8 @@ public class RunManager : MonoBehaviour
         }
         else
         {
-            // Tai normalus raundas, išvalome boso efektus
+            handsRequiredThisRound = 2 + currentRound;
+
             if (BossModifierManager.Instance != null)
             {
                 BossModifierManager.Instance.ClearModifier();
@@ -100,14 +98,11 @@ public class RunManager : MonoBehaviour
         handsSurvivedThisRound++;
         handsLostThisRun++;
 
-        // STANDARTINĖ ŽALA YRA 1
         int damageToTake = 1;
 
-        // TIKRINAME BOSO EFEKTĄ: Ar pritaikyta dviguba žala?
         if (BossModifierManager.Instance != null && BossModifierManager.Instance.currentModifier == BossModifierManager.ModifierType.DoubleDamage)
         {
-            damageToTake = 2; // Atimame 2 gyvybes
-            Debug.Log("BOSS EFEKTAS: Gauta dviguba žala!");
+            damageToTake = 2;
         }
 
         playerLives -= damageToTake;
@@ -137,42 +132,36 @@ public class RunManager : MonoBehaviour
 
     public void NextRound()
     {
-        // Jeigu ką tik baigėsi boso raundas
         if (isBossRound)
         {
-            isBossRound = false; // Išjungiame boso būseną
-            roundsSinceLastBoss = 0; // Nunuliname skaitliuką
-
-            currentRound++; // Pereiname prie normalaus raundo (pvz. į 4-ą)
-            Debug.Log("Boso raundas baigtas. Pereiname į normalų Raundą: " + currentRound);
+            isBossRound = false;
+            roundsSinceLastBoss = 0;
+            currentRound++;
         }
         else
         {
-            // Tai buvo normalus raundas
             roundsSinceLastBoss++;
 
-            // Jei tai buvo 3-ias normalus raundas (po paskutinio boso arba nuo žaidimo pradžios)
             if (roundsSinceLastBoss >= 3)
             {
-                // Sekantis raundas bus boso raundas (nedidiname currentRound skaičiaus!)
                 isBossRound = true;
-                Debug.Log("3 Raundai praėjo. Sekantis bus BOSS RAUNDAS!");
             }
             else
             {
-                // Jei dar nepraėjo 3 raundai, tiesiog einame į kitą normalų raundą
                 currentRound++;
             }
         }
 
         SetupRound();
+
+        SceneManager.LoadScene("Backjack_table_scene");
     }
 
     public void ResetRun()
     {
         currentRound = 1;
-        roundsSinceLastBoss = 0; // PRIDĖTA EILUTĖ
-        isBossRound = false;     // PRIDĖTA EILUTĖ
+        roundsSinceLastBoss = 0;
+        isBossRound = false;
         handsSurvivedThisRound = 0;
         playerLives = 3;
         playerMoney = 200;
@@ -182,6 +171,9 @@ public class RunManager : MonoBehaviour
         handsWonThisRun = 0;
         handsLostThisRun = 0;
         cardsUsedThisRun = 0;
+
+        PlayerPrefs.DeleteKey("SavedInventory");
+        PlayerPrefs.DeleteKey("HasStartCard");
 
         SetupRound();
     }
@@ -195,9 +187,9 @@ public class RunManager : MonoBehaviour
         PlayerPrefs.SetInt("LastRunHandsWon", handsWonThisRun);
         PlayerPrefs.SetInt("LastRunHandsLost", handsLostThisRun);
         PlayerPrefs.SetInt("LastRunCardsUsed", cardsUsedThisRun);
-		PlayerPrefs.SetInt("LastRunHighestMoney", highestMoneyThisRun);
+        PlayerPrefs.SetInt("LastRunHighestMoney", highestMoneyThisRun);
 
-		int bestRound = PlayerPrefs.GetInt("BestRound", 0);
+        int bestRound = PlayerPrefs.GetInt("BestRound", 0);
         if (currentRound > bestRound)
         {
             PlayerPrefs.SetInt("BestRound", currentRound);
@@ -212,24 +204,8 @@ public class RunManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    private void OpenShop()
-    {
-        // Įgyvendinta SCRUM-50 taisyklė: po boso raundo į parduotuvę nepatenkama
-        if (isBossRound)
-        {
-            Debug.Log("Parduotuvė praleidžiama po Boso Raundo! Tęsiamas žaidimas...");
-            NextRound();
-            return;
-        }
-
-        Debug.Log("Atidaroma parduotuvė...");
-        SceneManager.LoadScene("Shop");
-    }
-
     private void GameOver()
     {
-        Debug.Log("GAME OVER! Pasiektas: Round " + currentRound);
-
         SaveEndGameStats();
 
         PlayerPrefs.DeleteKey("Money");
@@ -237,6 +213,10 @@ public class RunManager : MonoBehaviour
         PlayerPrefs.DeleteKey("Round");
         PlayerPrefs.DeleteKey("Games");
         PlayerPrefs.DeleteKey("PowerUpCount");
+        PlayerPrefs.DeleteKey("SavedInventory");
+        PlayerPrefs.DeleteKey("HasStartCard");
+
+        InventoryManager.ClearInventory();
 
         SceneManager.LoadScene("End_screen");
     }
@@ -248,11 +228,16 @@ public class RunManager : MonoBehaviour
         PlayerPrefs.SetInt("Round", currentRound);
         PlayerPrefs.SetInt("Games", gamesPlayed);
 
-        // PlayerPrefs.SetInt("PowerUpCount", InventoryManager.powerUps.Count);
+        string invStr = "";
+        for (int i = 0; i < InventoryManager.powerUps.Count; i++)
+        {
+            invStr += InventoryManager.powerUps[i].name;
+            if (i < InventoryManager.powerUps.Count - 1) invStr += ",";
+        }
+        PlayerPrefs.SetString("SavedInventory", invStr);
+        PlayerPrefs.SetInt("HasStartCard", InventoryManager.hasReceivedStartCard ? 1 : 0);
 
         PlayerPrefs.Save();
-
-        Debug.Log("Game saved!");
     }
 
     public void LoadGame()
@@ -261,7 +246,5 @@ public class RunManager : MonoBehaviour
         playerLives = PlayerPrefs.GetInt("Lives", 3);
         currentRound = PlayerPrefs.GetInt("Round", 1);
         gamesPlayed = PlayerPrefs.GetInt("Games", 0);
-
-        Debug.Log("Game loaded!");
     }
 }

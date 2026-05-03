@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class BossModifierManager : MonoBehaviour
 {
     public static BossModifierManager Instance { get; private set; }
 
-    // Palikome tik du efektus
     public enum ModifierType { None, DoubleDamage, StealPowerUp }
     public ModifierType currentModifier = ModifierType.None;
 
@@ -21,39 +21,28 @@ public class BossModifierManager : MonoBehaviour
 
     private void Start()
     {
-        // Kai tik užsikrauna Blackjack stalo scena, patikriname:
-        // Ar RunManager egzistuoja ir ar dabar yra boso raundas?
         if (RunManager.instance != null && RunManager.instance.isBossRound)
         {
-            ApplyRandomModifier(); // Jei taip, iškart parodome boso UI ir pritaikome efektą
+            ApplyRandomModifier();
         }
         else
         {
-            ClearModifier(); // Jei ne, paslepiame UI
+            ClearModifier();
         }
     }
 
     public void ApplyRandomModifier()
     {
-        Debug.Log("UI ATNAUJINIMAS: Bandoma rodyti Boso skydelį!");
-
-        // Pirmiausia patikriname, ar žaidėjas apskritai turi Power-up kortų
         bool hasCards = (InventoryManager.instance != null && InventoryManager.powerUps.Count > 0);
-
         int randomMod;
 
         if (hasCards)
         {
-            // Jei žaidėjas TURI kortų, bosas gali rinktis iš abiejų atakų:
-            // 1 (DoubleDamage) arba 2 (StealPowerUp)
             randomMod = Random.Range(1, 3);
         }
         else
         {
-            // Jei žaidėjas NETURI kortų, kortos vagystės efektas nebegalimas.
-            // Priverstinai parenkame 1 (DoubleDamage).
             randomMod = 1;
-            Debug.Log("Žaidėjas neturi kortų, todėl bosas priverstinai naudoja Dvigubą Žalą!");
         }
 
         currentModifier = (ModifierType)randomMod;
@@ -69,22 +58,24 @@ public class BossModifierManager : MonoBehaviour
 
             case ModifierType.StealPowerUp:
                 modifierText.text = "BOSS HAZARD:\nPavogta korta!";
-                modifierText.color = new Color(0.8f, 0.2f, 0.8f); // Violetinė spalva
-
+                modifierText.color = new Color(0.8f, 0.2f, 0.8f);
                 ExecuteStealPowerUp();
                 break;
         }
+
+        StartCoroutine(HidePanelRoutine());
+    }
+
+    private IEnumerator HidePanelRoutine()
+    {
+        yield return new WaitForSeconds(3f);
+        if (modifierPanel != null) modifierPanel.SetActive(false);
     }
 
     private void ExecuteStealPowerUp()
     {
-        // Kadangi šią funkciją iškviesime tik žinodami, kad kortų tikrai yra, 
-        // galime iškart vogti atsitiktinę kortą.
         int randomIndex = Random.Range(0, InventoryManager.powerUps.Count);
-
         InventoryManager.instance.RemovePowerUpAt(randomIndex);
-
-        Debug.Log("Bosas pavogė kortą indeksu: " + randomIndex);
     }
 
     public void ClearModifier()
