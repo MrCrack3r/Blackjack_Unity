@@ -195,8 +195,9 @@ public class RunManager : MonoBehaviour
         PlayerPrefs.SetInt("LastRunHandsWon", handsWonThisRun);
         PlayerPrefs.SetInt("LastRunHandsLost", handsLostThisRun);
         PlayerPrefs.SetInt("LastRunCardsUsed", cardsUsedThisRun);
+		PlayerPrefs.SetInt("LastRunHighestMoney", highestMoneyThisRun);
 
-        int bestRound = PlayerPrefs.GetInt("BestRound", 0);
+		int bestRound = PlayerPrefs.GetInt("BestRound", 0);
         if (currentRound > bestRound)
         {
             PlayerPrefs.SetInt("BestRound", currentRound);

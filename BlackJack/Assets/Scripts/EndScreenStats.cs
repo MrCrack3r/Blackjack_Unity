@@ -25,6 +25,6 @@ public class EndScreenStats : MonoBehaviour
 		lastRunCardsUsedText.text = "Cards Used: " + PlayerPrefs.GetInt("LastRunCardsUsed", 0);
 
 		bestRoundText.text = "Best Round: " + PlayerPrefs.GetInt("BestRound", 0);
-		bestMoneyText.text = "Highest Budget: $" + PlayerPrefs.GetInt("BestMoney", 0);
+		bestMoneyText.text = "Highest Budget This Run: $" + PlayerPrefs.GetInt("LastRunHighestMoney", 0);
 	}
 }
