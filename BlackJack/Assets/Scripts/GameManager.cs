@@ -62,6 +62,10 @@ public class GameManager : MonoBehaviour
     [Header("Efektai")]
     public EndEffects endEffects;
 
+    [Header("Bet Slider")]
+    public Slider betSlider;
+    public TextMeshProUGUI betSliderText;
+
     private CardDisplay dealerHiddenCard;
 
     private int dealerScore;
@@ -90,6 +94,7 @@ public class GameManager : MonoBehaviour
     private bool forceWin = false;
     private bool forceSkip = false;
     private bool handshakeActive = false;
+    private bool isUpdatingSlider = false;
 
     private void Awake()
     {
@@ -102,6 +107,11 @@ public class GameManager : MonoBehaviour
         if (resultText != null) resultText.gameObject.SetActive(false);
 
         if (goToShopButton != null) goToShopButton.gameObject.SetActive(false);
+
+        if (betSlider != null)
+        {
+            betSlider.onValueChanged.AddListener(OnSliderChanged);
+        }
 
         firstHandBet = 0;
         secondHandBet = 0;
@@ -139,6 +149,8 @@ public class GameManager : MonoBehaviour
 
                 firstHandBet = 0;
                 secondHandBet = 0;
+
+                UpdateSliderLimits();
 
                 Debug.Log("Laukiama Deal mygtuko...");
 
@@ -386,7 +398,11 @@ public class GameManager : MonoBehaviour
 
         UpdateMoneyUI();
         UpdateButtons();
+
+        UpdateSliderLimits();
     }
+
+
 
     public void Hit()
     {
@@ -951,6 +967,8 @@ public class GameManager : MonoBehaviour
             int shownBet = firstHandBet + secondHandBet;
             if (shownBet <= 0) shownBet = currentBet;
             currentBetText.text = "$" + shownBet;
+
+            UpdateSliderLimits();
         }
     }
 
@@ -1113,6 +1131,53 @@ public class GameManager : MonoBehaviour
         UpdateButtons();
 
         Debug.Log("Statymas išvalytas.");
+    }
+
+    public void OnSliderChanged(float value)
+    {
+        if (isUpdatingSlider) return; 
+
+        if (currentState != GameState.Betting) return;
+
+        int sliderValue = Mathf.RoundToInt(value);
+        int difference = sliderValue - currentBet;
+
+        if (difference > 0)
+        {
+            if (RunManager.instance.playerMoney >= difference)
+            {
+                currentBet += difference;
+                RunManager.instance.playerMoney -= difference;
+            }
+        }
+        else if (difference < 0)
+        {
+            int refund = -difference;
+            currentBet -= refund;
+            RunManager.instance.playerMoney += refund;
+        }
+
+        UpdateMoneyUI();
+    }
+
+    void UpdateSliderText()
+    {
+        if (betSliderText != null)
+            betSliderText.text = "Bet: $" + currentBet;
+    }
+
+    void UpdateSliderLimits()
+    {
+        if (betSlider == null) return;
+
+        isUpdatingSlider = true; 
+
+        betSlider.maxValue = RunManager.instance.playerMoney + currentBet;
+        betSlider.value = currentBet;
+
+        isUpdatingSlider = false;
+
+        UpdateSliderText();
     }
 
     public bool doubleRewardActive = false;
