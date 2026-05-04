@@ -10,6 +10,7 @@ public class ShopManager : MonoBehaviour
 
     [Header("UI Elementai")]
     public TextMeshProUGUI notificationText;
+    public TextMeshProUGUI budgetText;
 
     [Header("Visos Galimos Kortos Žaidime")]
     public List<PowerUpData> allAvailablePowerUps;
@@ -42,7 +43,16 @@ public class ShopManager : MonoBehaviour
 
         if (notificationText != null) notificationText.gameObject.SetActive(false);
 
+        UpdateBudgetUI();
         GenerateRandomShop();
+    }
+
+    public void UpdateBudgetUI()
+    {
+        if (budgetText != null && RunManager.instance != null)
+        {
+            budgetText.text = "$" + RunManager.instance.playerMoney;
+        }
     }
 
     private void GenerateRandomShop()
@@ -51,10 +61,8 @@ public class ShopManager : MonoBehaviour
 
         List<PowerUpData> availableCards = new List<PowerUpData>(allAvailablePowerUps);
 
-        // ❗ pašalinam life item iš random pool
         availableCards.Remove(lifeItem);
 
-        // 🎴 RANDOM SLOTAI
         for (int i = 0; i < shopSlots.Length; i++)
         {
             if (shopSlots[i] == null) continue;
@@ -70,7 +78,6 @@ public class ShopManager : MonoBehaviour
             shopSlots[i].gameObject.SetActive(true);
         }
 
-        // ❤️ LIFE SLOT (VISADA)
         if (lifeSlot != null && lifeItem != null)
         {
             int price = lifeItem.baseCost;
@@ -99,10 +106,10 @@ public class ShopManager : MonoBehaviour
 
         if (balanceAfterPurchase < minimumBetRequired)
         {
-            return false; 
+            return false;
         }
 
-        return true; 
+        return true;
     }
 
     public void ShowNotification(string message, Color color)

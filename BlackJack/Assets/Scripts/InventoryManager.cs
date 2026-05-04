@@ -13,6 +13,8 @@ public class InventoryManager : MonoBehaviour
 
     public static List<PowerUpData> powerUps = new List<PowerUpData>();
     public static bool hasReceivedStartCard = false;
+    public static bool isRunStarted = false; // Saugiklis, kad kortos neužkrautų kiekvieną raundą
+
     private int maxPowerUps = 4;
 
     [Header("UI Elementai ekrane")]
@@ -31,33 +33,41 @@ public class InventoryManager : MonoBehaviour
     {
         if (tooltipPanel != null) tooltipPanel.SetActive(false);
 
-        if (powerUps.Count == 0 && PlayerPrefs.HasKey("HasStartCard"))
+        // Tikriname, ar tai visiškai naujas žaidimo startas / užkrovimas
+        if (!isRunStarted)
         {
-            hasReceivedStartCard = PlayerPrefs.GetInt("HasStartCard", 0) == 1;
-            string savedInv = PlayerPrefs.GetString("SavedInventory", "");
+            isRunStarted = true; // Užfiksuojame, kad žaidimas jau prasidėjo
 
-            if (!string.IsNullOrEmpty(savedInv))
+            if (PlayerPrefs.HasKey("HasStartCard"))
             {
-                string[] cardNames = savedInv.Split(',');
-                foreach (string cName in cardNames)
+                hasReceivedStartCard = PlayerPrefs.GetInt("HasStartCard", 0) == 1;
+                string savedInv = PlayerPrefs.GetString("SavedInventory", "");
+
+                if (!string.IsNullOrEmpty(savedInv))
                 {
-                    foreach (PowerUpData data in allAvailablePowerUps)
+                    string[] cardNames = savedInv.Split(',');
+                    foreach (string cName in cardNames)
                     {
-                        if (data.name == cName)
+                        foreach (PowerUpData data in allAvailablePowerUps)
                         {
-                            powerUps.Add(data);
-                            break;
+                            if (data.name == cName)
+                            {
+                                powerUps.Add(data);
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
 
+        // Pradinę kortą duodame TIK jei tai naujas žaidimas ir jos dar negavome
         if (!hasReceivedStartCard && powerUps.Count == 0)
         {
             hasReceivedStartCard = true;
             GiveRandomStartPowerUp();
         }
+
         UpdateInventoryUI();
     }
 
@@ -88,6 +98,7 @@ public class InventoryManager : MonoBehaviour
     {
         powerUps.Clear();
         hasReceivedStartCard = false;
+        isRunStarted = false; 
     }
 
     public void GiveRandomStartPowerUp()
@@ -113,14 +124,16 @@ public class InventoryManager : MonoBehaviour
         if (index >= 0 && index < powerUps.Count)
         {
             powerUps.RemoveAt(index);
-            UpdateInventoryUI();
             HideTooltip();
+            UpdateInventoryUI();
         }
     }
 
     public void UpdateInventoryUI()
     {
         if (inventorySlots == null) return;
+
+        HideTooltip();
 
         bool canUse = (GameManager.Instance != null && GameManager.Instance.currentState == GameState.PlayerTurn);
 

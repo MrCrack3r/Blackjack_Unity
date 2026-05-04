@@ -201,6 +201,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandleDealing()
     {
+        RectTransform mainHandRect = playerHandArea.GetComponent<RectTransform>();
+        if (mainHandRect != null)
+        {
+            mainHandRect.anchoredPosition = new Vector2(0f, mainHandRect.anchoredPosition.y);
+        }
+
         ClearHand(playerHandArea);
         ClearHand(dealerHandArea);
 
@@ -574,6 +580,12 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Nepakanka biudžeto split statymui.");
             return;
+        }
+
+        RectTransform mainHandRect = playerHandArea.GetComponent<RectTransform>();
+        if (mainHandRect != null)
+        {
+            mainHandRect.anchoredPosition = new Vector2(-246f, mainHandRect.anchoredPosition.y);
         }
 
         hasSplit = true;
@@ -1030,36 +1042,30 @@ public class GameManager : MonoBehaviour
 
     private void HandleKeyboardInput()
     {
-        // 👉 DEAL (kai betting state)
         if (currentState == GameState.Betting && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             OnDealButton();
             return;
         }
 
-        // 👉 PLAYER TURN inputai
         if (currentState != GameState.PlayerTurn)
             return;
 
-        // SPACE = HIT
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             Hit();
         }
 
-        // S = STAND
         if (Keyboard.current.sKey.wasPressedThisFrame)
         {
             Stand();
         }
 
-        // D = DOUBLE
         if (Keyboard.current.dKey.wasPressedThisFrame)
         {
             Double();
         }
 
-        // 👉 POWERUPS (1–4)
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
             TryUsePowerUp(0);
 
@@ -1135,7 +1141,7 @@ public class GameManager : MonoBehaviour
 
     public void OnSliderChanged(float value)
     {
-        if (isUpdatingSlider) return; 
+        if (isUpdatingSlider) return;
 
         if (currentState != GameState.Betting) return;
 
@@ -1170,7 +1176,7 @@ public class GameManager : MonoBehaviour
     {
         if (betSlider == null) return;
 
-        isUpdatingSlider = true; 
+        isUpdatingSlider = true;
 
         betSlider.maxValue = RunManager.instance.playerMoney + currentBet;
         betSlider.value = currentBet;

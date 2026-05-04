@@ -785,7 +785,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 7.3202, y: 504}
+  m_AnchoredPosition: {x: 0, y: 504}
   m_SizeDelta: {x: 164.6401, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &186541384
@@ -1266,7 +1266,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 7.3201, y: -488.895}
+  m_AnchoredPosition: {x: 0, y: -488.895}
   m_SizeDelta: {x: 164.6403, y: 47.79}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &231835593
@@ -2661,7 +2661,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -246, y: 267}
+  m_AnchoredPosition: {x: 0, y: 267}
   m_SizeDelta: {x: 500, y: 249.1702}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &379550685
@@ -3712,8 +3712,8 @@ RectTransform:
   - {fileID: 238599237}
   - {fileID: 254435969}
   - {fileID: 911012762}
-  - {fileID: 1115547953}
   - {fileID: 2066868073}
+  - {fileID: 1115547953}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -9453,7 +9453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc6f5b138306ae439b6883fab12da5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RunManager
-  currentRound: 3
+  currentRound: 1
   handsRequiredThisRound: 3
   handsSurvivedThisRound: 0
   playerLives: 3

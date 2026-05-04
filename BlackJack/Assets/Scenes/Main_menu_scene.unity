@@ -3950,7 +3950,7 @@ MonoBehaviour:
   handsLostThisRun: 0
   cardsUsedThisRun: 0
   isBossRound: 0
-  roundsSinceLastBoss: 0
+  roundsSinceLastBoss: 2
 --- !u!4 &1519485652
 Transform:
   m_ObjectHideFlags: 0
