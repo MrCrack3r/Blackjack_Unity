@@ -73,14 +73,14 @@ public class ShopManager : MonoBehaviour
 
             availableCards.RemoveAt(randomIndex);
 
-            int dynamicPrice = randomCard.baseCost;
+            int dynamicPrice = CalculateDynamicPrice(randomCard.baseCost);
             shopSlots[i].Setup(randomCard, dynamicPrice);
             shopSlots[i].gameObject.SetActive(true);
         }
 
         if (lifeSlot != null && lifeItem != null)
         {
-            int price = lifeItem.baseCost;
+            int price = CalculateDynamicPrice(lifeItem.baseCost);
 
             lifeSlot.Setup(lifeItem, price);
             lifeSlot.gameObject.SetActive(true);
